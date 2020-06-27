@@ -99,6 +99,10 @@
         </li>
     
         <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.returnseries" class="nav-link">pyform.returnseries module</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
             <a href="#module-pyform.timeseries" class="nav-link">pyform.timeseries module</a>
         </li>
     
@@ -124,12 +128,81 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-pyform.returnseries">
+<span id="pyform-returnseries-module"></span><h2>pyform.returnseries module<a class="headerlink" href="#module-pyform.returnseries" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyform.returnseries.ReturnSeries">
+<em class="property">class </em><code class="sig-prename descclassname">pyform.returnseries.</code><code class="sig-name descname">ReturnSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyform.timeseries.TimeSeries" title="pyform.timeseries.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyform.timeseries.TimeSeries</span></code></a></p>
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.to_freq">
+<code class="sig-name descname">to_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.to_month">
+<code class="sig-name descname">to_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_month" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.to_quarter">
+<code class="sig-name descname">to_quarter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_quarter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.to_week">
+<code class="sig-name descname">to_week</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_week" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.to_year">
+<code class="sig-name descname">to_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_year" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-pyform.timeseries">
 <span id="pyform-timeseries-module"></span><h2>pyform.timeseries module<a class="headerlink" href="#module-pyform.timeseries" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="pyform.timeseries.TimeSeries">
 <em class="property">class </em><code class="sig-prename descclassname">pyform.timeseries.</code><code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TimeSeries is a representation of a form of data that changes with
+time. For a timeseries object, time index should be unique, meaning
+it would only accept a “wide” dataframe and not a “long” dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> – a dataframe with datetime index, or a ‘date’/’datetime’ column</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyform.timeseries.TimeSeries.read_csv">
+<em class="property">classmethod </em><code class="sig-name descname">read_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.read_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a time series object from a csv file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – path to the csv file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a TimeSeries object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyform.TimeSeries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.timeseries.TimeSeries.read_db">
+<em class="property">classmethod </em><code class="sig-name descname">read_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.read_db" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.timeseries.TimeSeries.read_excel">
+<em class="property">classmethod </em><code class="sig-name descname">read_excel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.read_excel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>

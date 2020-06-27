@@ -4,6 +4,14 @@ pyform package
 Submodules
 ----------
 
+pyform.returnseries module
+--------------------------
+
+.. automodule:: pyform.returnseries
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyform.timeseries module
 ------------------------
 
