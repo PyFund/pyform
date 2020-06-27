@@ -36,6 +36,8 @@ lint:
 	make activate
 	black ./pyform
 	black ./tests
+	flake8 ./pyform
+	flake8 ./tests
 
 # create test
 test:
