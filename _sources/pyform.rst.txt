@@ -1,0 +1,22 @@
+pyform package
+==============
+
+Submodules
+----------
+
+pyform.timeseries module
+------------------------
+
+.. automodule:: pyform.timeseries
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyform
+   :members:
+   :undoc-members:
+   :show-inheritance:
