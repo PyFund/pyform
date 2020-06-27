@@ -102,3 +102,11 @@ def test_validate_correct_input():
     ts = TimeSeries(df)
 
     assert expected_output.equals(ts.df)
+
+
+def test_init_from_csv():
+    """Validate the read_csv clasmethod can initiate
+    timeseries objects from csv
+    """
+
+    TimeSeries.read_csv("tests/unit/data/twitter.csv")

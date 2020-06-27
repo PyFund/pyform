@@ -9,6 +9,22 @@ class TimeSeries:
 
         df = self._validate_input(df)
         self.df = df
+    
+    @classmethod
+    def read_csv(cls, path: str):
+
+        df = pd.read_csv(path)
+        return cls(df)
+    
+    @classmethod
+    def read_excel(cls, path: str):
+
+        return NotImplemented
+    
+    @classmethod
+    def read_db(cls, query: str):
+
+        return NotImplemented
 
     @staticmethod
     def _set_col_as_datetime_index(df: pd.DataFrame, col: str) -> pd.DataFrame:
