@@ -1,0 +1,2 @@
+include versioneer.py
+include pyform/_version.py
