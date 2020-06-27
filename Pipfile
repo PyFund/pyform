@@ -13,8 +13,10 @@ pydata-sphinx-theme = "*"
 twine = "*"
 coverage = "*"
 pytest-cov = "*"
+pyform = {editable = true, path = "."}
 
 [packages]
+pandas = "*"
 
 [requires]
 python_version = "3.8"
