@@ -5,22 +5,38 @@ log = logging.getLogger(__name__)
 
 
 class TimeSeries:
+    """TimeSeries is a representation of a form of data that changes with
+       time. For a timeseries object, time index should be unique, meaning
+       it would only accept a "wide" dataframe and not a "long" dataframe.
+
+       Args:
+           df: a dataframe with datetime index, or a 'date'/'datetime' column
+    """
+
     def __init__(self, df: pd.DataFrame):
 
         df = self._validate_input(df)
         self.df = df
-    
+
     @classmethod
     def read_csv(cls, path: str):
+        """Create a time series object from a csv file
+
+        Args:
+            path: path to the csv file
+
+        Returns:
+            pyform.TimeSeries: a TimeSeries object
+        """
 
         df = pd.read_csv(path)
         return cls(df)
-    
+
     @classmethod
     def read_excel(cls, path: str):
 
         return NotImplemented
-    
+
     @classmethod
     def read_db(cls, query: str):
 
@@ -55,8 +71,6 @@ class TimeSeries:
         """Validates the DataFrame is a time indexed pandas dataframe,
         or it has one column named as "date" or "datetime".
 
-        For a timeseries object, time index should be unique, meaning
-        it would only accept a "wide" dataframe and not a "long" dataframe.
 
         Args:
             df: a time indexed pandas dataframe, or a pandas dataframe
