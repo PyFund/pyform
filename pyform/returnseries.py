@@ -3,7 +3,6 @@ import logging
 log = logging.getLogger(__name__)
 
 import copy
-import datetime
 import math
 import pandas as pd
 from typing import Optional
@@ -82,6 +81,7 @@ class ReturnSeries(TimeSeries):
             freq: frequency to convert the return series to.
                 Available options can be found `here <https://tinyurl.com/t78g6bh>`_.
             method: compounding method when converting to lower frequency.
+
                 * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
                 * 'arithmetic': arithmetic compounding ``r1 + r2``
                 * 'continuous': continous compounding ``exp(r1+r2) - 1``
@@ -108,6 +108,7 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
+
                 * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
                 * 'arithmetic': arithmetic compounding ``r1 + r2``
                 * 'continuous': continous compounding ``exp(r1+r2) - 1``
@@ -123,6 +124,7 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
+
                 * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
                 * 'arithmetic': arithmetic compounding ``r1 + r2``
                 * 'continuous': continous compounding ``exp(r1+r2) - 1``
@@ -138,6 +140,7 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
+
                 * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
                 * 'arithmetic': arithmetic compounding ``r1 + r2``
                 * 'continuous': continous compounding ``exp(r1+r2) - 1``
@@ -153,6 +156,7 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
+
                 * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
                 * 'arithmetic': arithmetic compounding ``r1 + r2``
                 * 'continuous': continous compounding ``exp(r1+r2) - 1``
@@ -173,6 +177,7 @@ class ReturnSeries(TimeSeries):
     def add_benchmark(self, benchmark: "ReturnSeries", name: Optional[str] = None):
         """Add a benchmark for the return series. A benchmark is useful and needed
            in order to calculate:
+
                 * 'correlation': is the correlation between the return series and
                     the benchmark
                 * 'beta': is the CAPM beta between the return series and the benchmark
@@ -258,11 +263,7 @@ class ReturnSeries(TimeSeries):
         else:
 
             result = pd.DataFrame(
-                data={
-                    "benchmark": bm_names,
-                    "field": "correlation",
-                    "value": corr,
-                }
+                data={"benchmark": bm_names, "field": "correlation", "value": corr}
             )
 
         return result
