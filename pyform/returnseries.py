@@ -97,6 +97,14 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series in desired frequency
         """
 
+        try:
+            assert self._freq_compare(freq, self.freq)
+        except AssertionError:
+            raise ValueError(
+                "Cannot convert to higher frequency. "
+                f"target={freq}, current={self.freq}"
+            )
+
         if method not in ["arithmetic", "geometric", "continuous"]:
             raise ValueError(
                 "Method should be one of 'geometric', 'arithmetic' or 'continuous'"
