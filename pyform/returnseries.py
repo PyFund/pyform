@@ -33,7 +33,7 @@ class ReturnSeries(TimeSeries):
         """Performs arithmatic compounding.
 
         e.g. if there are 3 returns r1, r2, r3,
-        calculate r1 + r2 + r3
+        calculate ``r1 + r2`` + r3
 
         Args:
             returns: pandas series of returns, in decimals.
@@ -50,7 +50,7 @@ class ReturnSeries(TimeSeries):
         """Performs continuous compounding.
 
         e.g. if there are 3 returns r1, r2, r3,
-        calculate exp(r1 + r2 + r3) - 1
+        calculate exp(``r1 + r2`` + r3) - 1
 
         Args:
             returns: pandas series of returns, in decimals.
@@ -69,10 +69,9 @@ class ReturnSeries(TimeSeries):
             freq: frequency to convert the return series to.
                 Available options can be found `here <https://tinyurl.com/t78g6bh>`_.
             method: compounding method when converting to lower frequency.
-
-                * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
-                * 'arithmetic': arithmetic compounding r1 + r2
-                * 'continuous': continous compounding exp(r1+r2) - 1
+                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+                * 'arithmetic': arithmetic compounding ``r1 + r2``
+                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series in desired frequency
@@ -96,10 +95,9 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
-                * 'arithmetic': arithmetic compounding r1 + r2
-                * 'continuous': continous compounding exp(r1+r2) - 1
+                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+                * 'arithmetic': arithmetic compounding ``r1 + r2``
+                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in weekly frequency
@@ -112,10 +110,9 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
-                * 'arithmetic': arithmetic compounding r1 + r2
-                * 'continuous': continous compounding exp(r1+r2) - 1
+                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+                * 'arithmetic': arithmetic compounding ``r1 + r2``
+                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in monthly frequency
@@ -128,10 +125,9 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
-                * 'arithmetic': arithmetic compounding r1 + r2
-                * 'continuous': continous compounding exp(r1+r2) - 1
+                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+                * 'arithmetic': arithmetic compounding ``r1 + r2``
+                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in quarterly frequency
@@ -144,10 +140,9 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
-                * 'arithmetic': arithmetic compounding r1 + r2
-                * 'continuous': continous compounding exp(r1+r2) - 1
+                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+                * 'arithmetic': arithmetic compounding ``r1 + r2``
+                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in annual frequency
