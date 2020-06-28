@@ -205,6 +205,9 @@ class ReturnSeries(TimeSeries):
         meta: Optional[bool] = False,
     ):
 
+        if not len(self.benchmark) > 0:
+            raise ValueError("Correlation needs at least one benchmark.")
+
         ret = self.to_freq(freq=freq, method=compound_method)
         n_ret = len(ret.index)
 
@@ -245,7 +248,7 @@ class ReturnSeries(TimeSeries):
                     # Add number of rows skipped in calculation
                     skipped.append(n_ret - len(df.index))
 
-            except Exception as e:
+            except Exception as e:  # pragma: no cover
 
                 log.error(f"Cannot compute correlation: benchmark={name}: {e}")
                 pass
@@ -271,7 +274,7 @@ class ReturnSeries(TimeSeries):
             )
 
         return result
-    
+
     def get_total_return(self, method="geometric"):
 
-        return self._compound(method)(self.series.iloc[:,0])
+        return self._compound(method)(self.series.iloc[:, 0])

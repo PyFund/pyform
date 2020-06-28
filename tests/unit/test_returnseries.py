@@ -54,6 +54,12 @@ def test_add_benchmark():
 def test_add_benchmark_no_name():
 
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # no benchmark should raise ValueError
+    with pytest.raises(ValueError):
+        returns.get_corr()
+
+    # Single benchmark
     returns.add_benchmark(spy)
 
     corr = returns.get_corr()
@@ -80,7 +86,7 @@ def test_add_benchmark_no_name():
     )
     assert corr.equals(expected_output)
 
-    # test multiple indices
+    # test multiple benchmarks
     returns.add_benchmark(qqq)
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
