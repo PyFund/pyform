@@ -166,8 +166,95 @@ to “None”, which will use the column name of the benchmark.</p></li>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.get_annualized_return">
-<code class="sig-name descname">get_annualized_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_annualized_return" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_annualized_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_annualized_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute annualized return of the series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – method to use when compounding return. Defaults to “geometric”.</p></li>
+<li><p><strong>include_bm</strong> – whether to compute annualized return for benchmarks as well.
+Defaults to True.</p></li>
+<li><p><strong>meta</strong> – <p>whether to include meta data in output. Defaults to False.
+Available meta are:</p>
+<ul>
+<li><p>method: method used to compound annualized return</p></li>
+<li><p>start: start date for calculating annualized return</p></li>
+<li><p>end: end date for calculating annualized return</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>annualized return results with the following columns</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>name: name of the series</p></li>
+<li><dl class="simple">
+<dt>field: name of the field. In this case, it is ‘annualized return’</dt><dd><p>for all</p>
+</dd>
+</dl>
+</li>
+<li><p>value: annualized return value, in decimals</p></li>
+</ul>
+</div></blockquote>
+<p>Data described in meta will also be available in the returned DataFrame if
+meta is set to True.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.get_annualized_volatility">
+<code class="sig-name descname">get_annualized_volatility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'M'</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'sample'</span></em>, <em class="sig-param"><span class="n">compound_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_annualized_volatility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute annualized volatility of the series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> – Returns are converted to the same frequency before volatility
+is compuated. Defaults to “M”.</p></li>
+<li><p><strong>include_bm</strong> – whether to compute annualized volatility for benchmarks as well.
+Defaults to True.</p></li>
+<li><p><strong>method</strong> – {‘sample’, ‘population’}. method used to compute volatility
+(standard deviation). Defaults to “sample”.</p></li>
+<li><p><strong>compound_method</strong> – method to use when compounding return.
+Defaults to “geometric”.</p></li>
+<li><p><strong>meta</strong> – <p>whether to include meta data in output. Defaults to False.
+Available meta are:</p>
+<ul>
+<li><p>freq: frequency of the series</p></li>
+<li><p>method: method used to compound annualized volatility</p></li>
+<li><p>start: start date for calculating annualized volatility</p></li>
+<li><p>end: end date for calculating annualized volatility</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>annualized volatility results with the following columns</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>name: name of the series</p></li>
+<li><dl class="simple">
+<dt>field: name of the field. In this case, it is ‘annualized volatility’</dt><dd><p>for all</p>
+</dd>
+</dl>
+</li>
+<li><p>value: annualized volatility value, in decimals</p></li>
+</ul>
+</div></blockquote>
+<p>Data described in meta will also be available in the returned DataFrame if
+meta is set to True.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.get_corr">
@@ -224,31 +311,36 @@ meta is set to True.</p>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.get_total_return">
-<code class="sig-name descname">get_total_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_total_return" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_total_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_total_return" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute total return of the series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> – method to use when compounding total return.
-Defaults to “geometric”.</p></li>
 <li><p><strong>include_bm</strong> – whether to compute total return for benchmarks as well.
 Defaults to True.</p></li>
+<li><p><strong>method</strong> – method to use when compounding total return.
+Defaults to “geometric”.</p></li>
 <li><p><strong>meta</strong> – <p>whether to include meta data in output. Defaults to False.
 Available meta are:</p>
 <ul>
 <li><p>method: method used to compound total return</p></li>
-<li><p>start: start date for calculating correlation</p></li>
-<li><p>end: end date for calculating correlation</p></li>
+<li><p>start: start date for calculating total return</p></li>
+<li><p>end: end date for calculating total return</p></li>
 </ul>
 </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
+<dd class="field-even"><p><p>total return results with the following columns</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>name: name of the series</p></li>
 <li><p>field: name of the field. In this case, it is ‘total return’ for all</p></li>
 <li><p>value: total return value, in decimals</p></li>
 </ul>
+</div></blockquote>
+<p>Data described in meta will also be available in the returned DataFrame if
+meta is set to True.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
