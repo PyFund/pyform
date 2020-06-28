@@ -234,7 +234,7 @@ class ReturnSeries(TimeSeries):
                 * benchmark: name of the benchmark
                 * field: name of the field. In this case, it is 'correlation' for all
                 * value: correlation value
-            
+
             Data described in meta will also be available in the returned DataFrame if
             meta is set to True.
         """
@@ -314,8 +314,7 @@ class ReturnSeries(TimeSeries):
     def get_total_return(self, method="geometric"):
 
         return self._compound(method)(self.series.iloc[:, 0])
-    
+
     def get_annualized_return(self, method=""):
 
         return None
-

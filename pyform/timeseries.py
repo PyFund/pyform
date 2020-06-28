@@ -161,7 +161,7 @@ class TimeSeries:
     def _infer_freq(self):
 
         freq = set()
-        max_check = min(len(self.series.index)-10, 50)
+        max_check = min(len(self.series.index) - 10, 50)
 
         if max_check <= 10:
             inferred_freq = self.series.index.inferred_freq
@@ -171,7 +171,7 @@ class TimeSeries:
             # check head
             for i in range(0, max_check, 10):
 
-                inferred_freq = self.series.index[i:(i+10)].inferred_freq
+                inferred_freq = self.series.index[i : (i + 10)].inferred_freq
 
                 if inferred_freq is not None:
 
@@ -180,12 +180,12 @@ class TimeSeries:
             # check from tail
             for i in range(0, -max_check, -10):
 
-                inferred_freq = self.series.index[(i-10):i].inferred_freq
+                inferred_freq = self.series.index[(i - 10) : i].inferred_freq
 
                 if inferred_freq is not None:
 
                     freq.add(inferred_freq)
-        
+
         if len(freq) == 0:
             raise ValueError("Cannot infer series frequency.")
 
