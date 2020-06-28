@@ -26,8 +26,12 @@ class TimeSeries:
         self._series = df.copy()
         self.series = df.copy()
 
+        # start and end date of the series
         self.start = min(self.series.index)
         self.end = max(self.series.index)
+
+        # frequency of the series
+        self.freq = self._infer_freq()
 
     @classmethod
     def read_csv(cls, path: str):
@@ -153,3 +157,39 @@ class TimeSeries:
 
         self.start = min(self.series.index)
         self.end = max(self.series.index)
+
+    def _infer_freq(self):
+
+        freq = set()
+        max_check = min(len(self.series.index)-10, 50)
+
+        if max_check <= 10:
+            inferred_freq = self.series.index.inferred_freq
+            if inferred_freq is not None:
+                freq.add(inferred_freq)
+        else:
+            # check head
+            for i in range(0, max_check, 10):
+
+                inferred_freq = self.series.index[i:(i+10)].inferred_freq
+
+                if inferred_freq is not None:
+
+                    freq.add(inferred_freq)
+
+            # check from tail
+            for i in range(0, -max_check, -10):
+
+                inferred_freq = self.series.index[(i-10):i].inferred_freq
+
+                if inferred_freq is not None:
+
+                    freq.add(inferred_freq)
+        
+        if len(freq) == 0:
+            raise ValueError("Cannot infer series frequency.")
+
+        if len(freq) > 1:
+            raise ValueError(f"Multiple series frequency detected: {freq}")
+
+        return freq.pop()
