@@ -7,9 +7,18 @@ from pyform.timeseries import TimeSeries
 
 
 class ReturnSeries(TimeSeries):
+    """A return series. It should be datetime indexed and
+       has one column of returns data.
+
+    Args:
+        TimeSeries ([type]): [description]
+    """
+
     def __init__(self, df):
 
         super().__init__(df)
+
+        self.benchmark = dict()
 
     @staticmethod
     def _compound_geometric(returns: pd.Series) -> float:
@@ -149,3 +158,10 @@ class ReturnSeries(TimeSeries):
         """
 
         return self.to_freq("Y", method)
+
+    def add_benchmark(self, benchmark: 'ReturnSeries', name: Optional[str]=None):
+
+        if name is None:
+            name = benchmark.df.columns[0]
+
+        self.benchmark[name] = benchmark
