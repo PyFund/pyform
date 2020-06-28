@@ -224,7 +224,8 @@ class ReturnSeries(TimeSeries):
             compound_method: {'geometric', 'arithmetic', 'continuous'}.
                 Defaults to "geometric".
 
-            meta: Whether to include meta data. Defaults to False. Available meta are:
+            meta: whether to include meta data in output. Defaults to False.
+                Available meta are:
 
                 * freq: frequency used to compute correlation
                 * method: method used to compute correlation
@@ -324,7 +325,26 @@ class ReturnSeries(TimeSeries):
         method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
         meta: Optional[bool] = False,
-    ):
+    ) -> pd.DataFrame:
+        """Compute total return of the series
+
+        Args:
+            method: method to use when compounding total return. Defaults to "geometric".
+            include_bm: whether to compute total return for benchmarks as well. Defaults to True.
+            meta: whether to include meta data in output. Defaults to False.
+                Available meta are:
+
+                * method: method used to compound total return
+                * start: start date for calculating correlation
+                * end: end date for calculating correlation
+
+        Returns:
+            pd.DataFrame:
+            
+                * name: name of the series
+                * field: name of the field. In this case, it is 'total return' for all
+                * value: total return value, in decimals
+        """
 
         # Columns in the returned dataframe
         names = []
