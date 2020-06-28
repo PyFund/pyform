@@ -39,7 +39,7 @@ def test_corr():
     with pytest.raises(ValueError):
         returns.get_corr()
 
-    # Single benchmark
+    # with single benchmark
     returns.add_benchmark(spy)
 
     corr = returns.get_corr()
@@ -96,7 +96,7 @@ def test_total_return():
     )
     assert total_return.equals(expected_output)
 
-    # Single benchmark
+    # with single benchmark
     returns.add_benchmark(spy)
     total_return = returns.get_total_return()
     expected_output = pd.DataFrame(
@@ -184,7 +184,7 @@ def test_annualized_return():
     )
     assert ann_return.equals(expected_output)
 
-    # Single benchmark
+    # with single benchmark
     returns.add_benchmark(spy)
     ann_return = returns.get_annualized_return()
     expected_output = pd.DataFrame(
@@ -220,3 +220,87 @@ def test_annualized_return():
         }
     )
     assert ann_return.equals(expected_output)
+
+
+def test_annualized_volatility():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    ann_vol = returns.get_annualized_volatility()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized volatility",
+            "value": [0.5200932110481337],
+        }
+    )
+    assert ann_vol.equals(expected_output)
+
+    # daily volatility
+    ann_vol = returns.get_annualized_volatility(freq="D", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized volatility",
+            "value": [0.545298443138832],
+            "freq": "D",
+            "method": "sample",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert ann_vol.equals(expected_output)
+
+    # population standard deviation
+    ann_vol = returns.get_annualized_volatility(method="population", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized volatility",
+            "value": [0.5168324064202331],
+            "freq": "M",
+            "method": "population",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert ann_vol.equals(expected_output)
+
+    # with single benchmark
+    returns.add_benchmark(spy)
+    ann_vol = returns.get_annualized_volatility()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "annualized volatility",
+            "value": [0.5200932110481337, 0.13609234804383752],
+        }
+    )
+    assert ann_vol.equals(expected_output)
+
+    # daily volatility
+    ann_vol = returns.get_annualized_volatility(freq="D", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "annualized volatility",
+            "value": [0.545298443138832, 0.17501475527479404],
+            "freq": "D",
+            "method": "sample",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert ann_vol.equals(expected_output)
+
+    # has benchmark, but include_bm=False
+    ann_vol = returns.get_annualized_volatility(include_bm=False)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized volatility",
+            "value": [0.5200932110481337],
+        }
+    )
+    assert ann_vol.equals(expected_output)

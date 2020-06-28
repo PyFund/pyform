@@ -97,6 +97,10 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series in desired frequency
         """
 
+        if freq == "D":
+            # Use businessness days for all return series
+            freq = "B"
+
         try:
             assert self._freq_compare(freq, self.freq)
         except AssertionError:
@@ -322,17 +326,17 @@ class ReturnSeries(TimeSeries):
 
     def get_total_return(
         self,
-        method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
+        method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
     ) -> pd.DataFrame:
         """Compute total return of the series
 
         Args:
-            method: method to use when compounding total return.
-                Defaults to "geometric".
             include_bm: whether to compute total return for benchmarks as well.
                 Defaults to True.
+            method: method to use when compounding total return.
+                Defaults to "geometric".
             meta: whether to include meta data in output. Defaults to False.
                 Available meta are:
 
@@ -455,5 +459,123 @@ class ReturnSeries(TimeSeries):
             result = result[["name", "field", "value", "method", "start", "end"]]
         else:
             result = result[["name", "field", "value"]]
+
+        return result
+
+    def get_annualized_volatility(
+        self,
+        freq: Optional[str] = "M",
+        include_bm: Optional[bool] = True,
+        method: Optional[str] = "sample",
+        compound_method: Optional[str] = "geometric",
+        meta: Optional[bool] = False,
+    ):
+        """Compute annualized volatility of the series
+
+        Args:
+            freq: Returns are converted to the same frequency before volatility
+                is compuated. Defaults to "M".
+            include_bm: whether to compute annualized volatility for benchmarks as well.
+                Defaults to True.
+            method: {'sample', 'population'}. method used to compute volatility
+                (standard deviation). Defaults to "sample".
+            compound_method: method to use when compounding return.
+                Defaults to "geometric".
+            meta: whether to include meta data in output. Defaults to False.
+                Available meta are:
+
+                * freq: frequency of the series
+                * method: method used to compound annualized volatility
+                * start: start date for calculating annualized volatility
+                * end: end date for calculating annualized volatility
+
+        Returns:
+            pd.DataFrame: annualized volatility results with the following columns
+
+                * name: name of the series
+                * field: name of the field. In this case, it is 'annualized volatility'
+                    for all
+                * value: annualized volatility value, in decimals
+
+            Data described in meta will also be available in the returned DataFrame if
+            meta is set to True.
+        """
+
+        # delta degrees of freedom, used for calculate standard deviation
+        ddof = {"sample": 1, "population": 0}[method]
+
+        # Columns in the returned dataframe
+        names = []
+        ann_vol = []
+        start = []
+        end = []
+
+        # Convert series to the desired frequency
+        ret = self.to_period(freq=freq, method=compound_method)
+
+        # To annualize, after changing the frequency, see how many
+        # periods there are in a year
+        one_year = pd.to_timedelta(365.25, unit="D")
+        years = (self.end - self.start) / one_year
+        sample_per_year = len(ret.index) / years
+
+        vol = ret.iloc[:, 0].std(ddof=ddof)
+        vol *= math.sqrt(sample_per_year)
+
+        names.append(ret.columns[0])
+        ann_vol.append(vol)
+        start.append(self.start)
+        end.append(self.end)
+
+        if include_bm:
+            for name, benchmark in self.benchmark.items():
+
+                try:
+
+                    # Modify benchmark so it's in the same timerange as the
+                    # returns series
+                    benchmark = self._normalize_daterange(benchmark)
+                    bm = benchmark.to_period(freq=freq, method=compound_method)
+
+                    years = (benchmark.end - benchmark.start) / one_year
+                    sample_per_year = len(bm.index) / years
+
+                    vol = bm.iloc[:, 0].std(ddof=ddof)
+                    vol *= math.sqrt(sample_per_year)
+
+                    names.append(name)
+                    ann_vol.append(vol)
+
+                    if meta:
+                        start.append(benchmark.start)
+                        end.append(benchmark.end)
+
+                except Exception as e:  # pragma: no cover
+
+                    log.error(
+                        "Cannot compute annualized volatility: "
+                        f"benchmark={name}: {e}"
+                    )
+                    pass
+
+        if meta:
+
+            result = pd.DataFrame(
+                data={
+                    "name": names,
+                    "field": "annualized volatility",
+                    "value": ann_vol,
+                    "freq": freq,
+                    "method": method,
+                    "start": start,
+                    "end": end,
+                }
+            )
+
+        else:
+
+            result = pd.DataFrame(
+                data={"name": names, "field": "annualized volatility", "value": ann_vol}
+            )
 
         return result

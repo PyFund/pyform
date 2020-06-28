@@ -93,13 +93,13 @@ class TimeSeries:
             freq2: frequency 2
 
         Returns:
-            bool: frequency 1 is lower than frequency 2
+            bool: frequency 1 is lower than or euqal to frequency 2
         """
 
         freq = ["H", "D", "B", "W", "M", "Q", "Y"]
         freq = dict(zip(freq, [*range(0, len(freq))]))
 
-        return freq[freq1] > freq[freq2]
+        return freq[freq1] >= freq[freq2]
 
     def _validate_input(self, df: pd.DataFrame) -> pd.DataFrame:
         """Validates the DataFrame is a time indexed pandas dataframe,
