@@ -41,7 +41,7 @@ def test_to_week_continuous():
 def test_to_period_wrong_method():
 
     with pytest.raises(ValueError):
-        returns.to_freq("W", "contnuuous")  # typo in continuous should cause failure
+        returns.to_period("W", "contnuuous")  # typo in continuous should cause failure
 
 
 def test_add_benchmark():

@@ -12,9 +12,6 @@ from pyform.timeseries import TimeSeries
 class ReturnSeries(TimeSeries):
     """A return series. It should be datetime indexed and
        has one column of returns data.
-
-    Args:
-        TimeSeries ([type]): [description]
     """
 
     def __init__(self, df):
@@ -84,7 +81,7 @@ class ReturnSeries(TimeSeries):
 
         return compound[method]
 
-    def to_freq(self, freq: str, method: str) -> pd.DataFrame:
+    def to_period(self, freq: str, method: str) -> pd.DataFrame:
         """Converts return series to a different (and lower) frequency.
 
         Args:
@@ -121,7 +118,7 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series, in weekly frequency
         """
 
-        return self.to_freq("W", method)
+        return self.to_period("W", method)
 
     def to_month(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to monthly frequency.
@@ -137,7 +134,7 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series, in monthly frequency
         """
 
-        return self.to_freq("M", method)
+        return self.to_period("M", method)
 
     def to_quarter(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to quarterly frequency.
@@ -153,7 +150,7 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series, in quarterly frequency
         """
 
-        return self.to_freq("Q", method)
+        return self.to_period("Q", method)
 
     def to_year(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to annual frequency.
@@ -169,7 +166,7 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series, in annual frequency
         """
 
-        return self.to_freq("Y", method)
+        return self.to_period("Y", method)
 
     def _normalize_daterange(self, series: "ReturnSeries"):
 
@@ -243,7 +240,7 @@ class ReturnSeries(TimeSeries):
         if not len(self.benchmark) > 0:
             raise ValueError("Correlation needs at least one benchmark.")
 
-        ret = self.to_freq(freq=freq, method=compound_method)
+        ret = self.to_period(freq=freq, method=compound_method)
         n_ret = len(ret.index)
 
         # Columns in the returned dataframe
@@ -264,13 +261,13 @@ class ReturnSeries(TimeSeries):
                 # note this is done after it's time range has been normalized
                 # this is important as otherwise when frequency is changed, we may
                 # include additional days in the calculation
-                bm_ret = benchmark.to_freq(freq=freq, method=compound_method)
+                bm_ret = benchmark.to_period(freq=freq, method=compound_method)
 
                 # Join returns and benchmark to calculate correlation
                 df = ret.join(bm_ret, on="datetime", how="inner")
 
                 # Add correlation to list
-                corr.append(df.corr().iloc[0, 1])
+                corr.append(df.corr(method).iloc[0, 1])
 
                 # Add benchmark to list of benchmark names
                 bm_names.append(name)
@@ -313,3 +310,8 @@ class ReturnSeries(TimeSeries):
     def get_total_return(self, method="geometric"):
 
         return self._compound(method)(self.series.iloc[:, 0])
+    
+    def get_annualized_return(self, method=""):
+
+        return None
+
