@@ -54,3 +54,11 @@ def test_add_benchmark():
     returns.add_benchmark(benchmark, "SPY")
 
     assert "SPY" in returns.benchmark
+
+def test_add_benchmark_no_name():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+    benchmark = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
+    returns.add_benchmark(benchmark)
+
+    assert "SPY" in returns.benchmark
