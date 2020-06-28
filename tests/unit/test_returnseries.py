@@ -144,3 +144,79 @@ def test_total_return():
         }
     )
     assert total_return.equals(expected_output)
+
+
+def test_annualized_return():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    ann_return = returns.get_annualized_return()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized return",
+            "value": [-0.06352921539090761],
+        }
+    )
+    assert ann_return.equals(expected_output)
+
+    ann_return = returns.get_annualized_return(method="arithmetic", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized return",
+            "value": [0.08553588206768473],
+            "method": "arithmetic",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert ann_return.equals(expected_output)
+
+    ann_return = returns.get_annualized_return(method="continuous")
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized return",
+            "value": [0.08553588206768473],
+        }
+    )
+    assert ann_return.equals(expected_output)
+
+    # Single benchmark
+    returns.add_benchmark(spy)
+    ann_return = returns.get_annualized_return()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "annualized return",
+            "value": [-0.06352921539090761, 0.08265365923419554],
+        }
+    )
+    assert ann_return.equals(expected_output)
+
+    # meta=True
+    ann_return = returns.get_annualized_return(meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "annualized return",
+            "value": [-0.06352921539090761, 0.08265365923419554],
+            "method": "geometric",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert ann_return.equals(expected_output)
+
+    # has benchmark, but include_bm=False
+    ann_return = returns.get_annualized_return(include_bm=False)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "annualized return",
+            "value": [-0.06352921539090761],
+        }
+    )
+    assert ann_return.equals(expected_output)

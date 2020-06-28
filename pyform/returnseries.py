@@ -402,6 +402,30 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_annualized_return(self, method: Optional[str] = "geometric"):
+    def get_annualized_return(
+        self,
+        method: Optional[str] = "geometric",
+        include_bm: Optional[bool] = True,
+        meta: Optional[bool] = False,
+    ):
 
-        return NotImplemented
+        result = self.get_total_return(method=method, include_bm=include_bm, meta=True)
+        result["field"] = "annualized return"
+        result["days"] = (result["end"] - result["start"]) / pd.to_timedelta(
+            1, unit="D"
+        )
+
+        years = result["days"] / 365.25
+        if method == "geometric":
+            result["value"] = (1 + result["value"]) ** (1 / years) - 1
+        elif method == "arithmetic":
+            result["value"] = result["value"] * (1 / years)
+        elif method == "continuous":
+            result["value"] = (result["value"] + 1).apply(math.log) * (1 / years)
+
+        if meta:
+            result = result[["name", "field", "value", "method", "start", "end"]]
+        else:
+            result = result[["name", "field", "value"]]
+
+        return result
