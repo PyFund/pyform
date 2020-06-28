@@ -1,5 +1,6 @@
 from pyform.timeseries import TimeSeries
 
+import datetime
 import pytest
 import pandas as pd
 
@@ -41,7 +42,7 @@ def test_validate_input_use_datetime():
 
     ts = TimeSeries(df)
 
-    assert expected_output.equals(ts.df)
+    assert expected_output.equals(ts.series)
 
 
 def test_validate_input_use_date():
@@ -63,7 +64,7 @@ def test_validate_input_use_date():
 
     ts = TimeSeries(df)
 
-    assert expected_output.equals(ts.df)
+    assert expected_output.equals(ts.series)
 
 
 def test_validate_bad_datetime():
@@ -101,7 +102,7 @@ def test_validate_correct_input():
 
     ts = TimeSeries(df)
 
-    assert expected_output.equals(ts.df)
+    assert expected_output.equals(ts.series)
 
 
 def test_init_from_csv():
@@ -110,7 +111,8 @@ def test_init_from_csv():
     """
 
     ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
-    assert ts.df.iloc[0, 0] == 44.9
+    assert ts.series.iloc[0, 0] == 44.9
+
 
 def test_init_from_excel():
     """Validate the read_excel clasmethod can initiate
@@ -120,6 +122,7 @@ def test_init_from_excel():
     # TODO: update this test once we implement this method
     TimeSeries.read_excel("tests/unit/data/twitter.xlsx")
 
+
 def test_init_from_db():
     """Validate the read_db clasmethod can initiate
     timeseries objects from database query
@@ -127,3 +130,11 @@ def test_init_from_db():
 
     # TODO: update this test once we implement this method
     TimeSeries.read_db("SELECT * FROM returns")
+
+def test_set_daterange():
+
+    ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
+    ts.set_daterange("2020-01-01", "2020-01-31")
+
+    assert ts.start == datetime.datetime.strptime("2020-01-02", "%Y-%m-%d")
+    assert ts.end == datetime.datetime.strptime("2020-01-31", "%Y-%m-%d")

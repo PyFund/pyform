@@ -1,7 +1,9 @@
 import logging
-import pandas as pd
 
 log = logging.getLogger(__name__)
+
+import pandas as pd
+from typing import Optional
 
 
 class TimeSeries:
@@ -16,7 +18,9 @@ class TimeSeries:
     def __init__(self, df: pd.DataFrame):
 
         df = self._validate_input(df)
-        self.df = df
+        self.series = df
+        self.start = min(self.series.index)
+        self.end = max(self.series.index)
 
     @classmethod
     def read_csv(cls, path: str):
@@ -122,3 +126,13 @@ class TimeSeries:
         # lastly, use date as index
         if has_date:
             return self._set_col_as_datetime_index(df, "date")
+
+    def set_daterange(self, start: Optional[str]=None, end: Optional[str]=None):
+
+        if start is not None:
+            self.series = self.series.loc[start:]
+            self.start = min(self.series.index)
+        
+        if end is not None:
+            self.series = self.series.loc[:end]
+            self.end = max(self.series.index)
