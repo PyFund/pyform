@@ -14,7 +14,7 @@ class ReturnSeries(TimeSeries):
     @staticmethod
     def _compound_geometric(returns: pd.Series):
 
-        return math.prod(1 + returns) - 1
+        return (1 + returns).prod() - 1
 
     @staticmethod
     def _compound_arithmetic(returns: pd.Series):
@@ -51,3 +51,4 @@ class ReturnSeries(TimeSeries):
     def to_year(self, method: Optional[str] = "geometric"):
 
         return self.to_freq("Y", method)
+
