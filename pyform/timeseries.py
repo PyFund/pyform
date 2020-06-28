@@ -81,6 +81,25 @@ class TimeSeries:
             return df
         except Exception as err:
             raise ValueError(f"Error converting '{col}' to index: {err}")
+    
+    @staticmethod
+    def _freq_compare(freq1: str, freq2: str) -> bool:
+        """Tests freq1 has a lower frequency than freq2.
+        Lower frequencies cannot be converted to higher frequencies
+        due to lower resolution.
+
+        Args:
+            freq1: frequency 1
+            freq2: frequency 2
+
+        Returns:
+            bool: frequency 1 is lower than frequency 2
+        """
+
+        freq = ["H", "D", "B", "W", "M", "Q", "Y"]
+        freq = dict(zip(freq, [*range(0, len(freq))]))
+
+        return freq[freq1] > freq[freq2]
 
     def _validate_input(self, df: pd.DataFrame) -> pd.DataFrame:
         """Validates the DataFrame is a time indexed pandas dataframe,
@@ -180,7 +199,7 @@ class TimeSeries:
             # check from tail
             for i in range(0, -max_check, -10):
 
-                inferred_freq = self.series.index[(i - 10) : i].inferred_freq
+                inferred_freq = self.series.index[(i - 11) : (i - 1)].inferred_freq
 
                 if inferred_freq is not None:
 

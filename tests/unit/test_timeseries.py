@@ -105,6 +105,11 @@ def test_validate_correct_input():
     assert expected_output.equals(ts.series)
 
 
+def test_freq_compare():
+
+    assert TimeSeries._freq_compare("W", "D")
+    assert not TimeSeries._freq_compare("D", "W")
+
 def test_init_from_csv():
     """Validate the read_csv clasmethod can initiate
     timeseries objects from csv
@@ -165,28 +170,13 @@ def test_infer_freq():
     df = pd.DataFrame(
         data={
             "date": [
-                "2020-01-01",
-                "2020-01-02",
-                "2020-01-03",
-                "2020-01-04",
-                "2020-01-05",
-                "2020-01-06",
-                "2020-01-07",
-                "2020-01-08",
-                "2020-01-09",
-                "2020-01-10",
-                "2020-01-01",
-                "2020-02-01",
-                "2020-03-01",
-                "2020-04-01",
-                "2020-05-01",
-                "2020-06-01",
-                "2020-07-01",
-                "2020-08-01",
-                "2020-09-01",
-                "2020-10-01",
-            ],
-            "returns": [*range(0, 20)],
+                "2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04",
+                "2020-01-05", "2020-01-06", "2020-01-07", "2020-01-08",
+                "2020-01-09", "2020-01-10", "2020-01-11", "2020-02-01",
+                "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01",
+                "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01",
+                "2020-11-01", "2020-12-01", ],
+            "returns": [*range(0, 22)],
         }
     )
     with pytest.raises(ValueError):
