@@ -136,28 +136,122 @@
 <dd><p>Bases: <a class="reference internal" href="#pyform.timeseries.TimeSeries" title="pyform.timeseries.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyform.timeseries.TimeSeries</span></code></a></p>
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_freq">
-<code class="sig-name descname">to_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_freq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">to_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts return series to a different (and lower) frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> (<em>str</em>) – frequency to convert the return series to.
+Available options can be found <a class="reference external" href="https://tinyurl.com/t78g6bh">here</a>.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – <p>compounding method when converting to lower frequency.</p>
+<ul>
+<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
+<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
+<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return series in desired frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_month">
-<code class="sig-name descname">to_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_month" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">to_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts return series to monthly frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
+<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
+<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return series, in monthly frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_quarter">
-<code class="sig-name descname">to_quarter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_quarter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">to_quarter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_quarter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts return series to quarterly frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
+<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
+<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return series, in quarterly frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_week">
-<code class="sig-name descname">to_week</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_week" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">to_week</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_week" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts return series to weekly frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
+<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
+<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return series, in weekly frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_year">
-<code class="sig-name descname">to_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_year" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">to_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts return series to annual frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
+<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
+<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>return series, in annual frequency</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
