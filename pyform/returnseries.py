@@ -201,9 +201,44 @@ class ReturnSeries(TimeSeries):
     def get_corr(
         self,
         freq: Optional[str] = "M",
+        method: Optional[str] = "pearson",
         compound_method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
-    ):
+    ) -> pd.DataFrame:
+        """Calculates correlation of the return series with its benchmarks
+
+        Args:
+            freq: Returns are converted to the same frequency before correlation
+                is compuated. Defaults to "M".
+            method: {'pearson', 'kendall', 'spearman'}. Defaults to "pearson".
+
+                * pearson : standard correlation coefficient
+                * kendall : Kendall Tau correlation coefficient
+                * spearman : Spearman rank correlation
+
+            compound_method: {'geometric', 'arithmetic', 'continuous'}.
+                Defaults to "geometric".
+
+            meta: Whether to include meta data. Defaults to False. Available meta are:
+
+                * start: start date for calculating correlation
+                * end: end date for calculating correlation
+                * total: total number of data points in returns series
+                * skipped: number of data points skipped when computing correlation
+
+        Raises:
+            ValueError: when no benchmark is set
+
+        Returns:
+            pd.DataFrame: correlation results with the following columns
+
+                * benchmark: name of the benchmark
+                * field: name of the field. In this case, it is 'correlation' for all
+                * value: correlation value
+            
+            Data described in meta will also be available in the returned DataFrame if
+            meta is set to True.
+        """
 
         if not len(self.benchmark) > 0:
             raise ValueError("Correlation needs at least one benchmark.")
