@@ -109,4 +109,21 @@ def test_init_from_csv():
     timeseries objects from csv
     """
 
-    TimeSeries.read_csv("tests/unit/data/twitter.csv")
+    ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
+    assert ts.df.iloc[0, 0] == 46.5
+
+def test_init_from_excel():
+    """Validate the read_excel clasmethod can initiate
+    timeseries objects from excel
+    """
+
+    # TODO: update this test once we implement this method
+    TimeSeries.read_excel("tests/unit/data/twitter.xlsx")
+
+def test_init_from_db():
+    """Validate the read_db clasmethod can initiate
+    timeseries objects from database query
+    """
+
+    # TODO: update this test once we implement this method
+    TimeSeries.read_db("SELECT * FROM returns")
