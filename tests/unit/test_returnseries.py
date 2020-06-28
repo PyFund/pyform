@@ -64,8 +64,10 @@ def test_add_benchmark():
 def test_add_benchmark_no_name():
 
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
-    benchmark = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
-    returns.add_benchmark(benchmark)
+    spy = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
+    qqq = ReturnSeries.read_csv("tests/unit/data/qqq_returns.csv")
+
+    returns.add_benchmark(spy)
 
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
@@ -87,6 +89,18 @@ def test_add_benchmark_no_name():
             "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
             "total": 80,
             "skipped": 0,
+        }
+    )
+    assert corr.equals(expected_output)
+
+    # test multiple indices
+    returns.add_benchmark(qqq)
+    corr = returns.get_corr()
+    expected_output = pd.DataFrame(
+        data={
+            "benchmark": ["SPY", "QQQ"],
+            "field": "correlation",
+            "value": [0.21224719919904408, 0.27249109347246325],
         }
     )
     assert corr.equals(expected_output)
