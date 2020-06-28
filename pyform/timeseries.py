@@ -18,7 +18,14 @@ class TimeSeries:
     def __init__(self, df: pd.DataFrame):
 
         df = self._validate_input(df)
+
+        # series is the one we are currently analyzing, while
+        # _series stores the initial input. This allows us to
+        # go to different timerange and comeback, without losing
+        # any information
+        self._series = df.copy()
         self.series = df
+
         self.start = min(self.series.index)
         self.end = max(self.series.index)
 
@@ -130,9 +137,9 @@ class TimeSeries:
     def set_daterange(self, start: Optional[str]=None, end: Optional[str]=None):
 
         if start is not None:
-            self.series = self.series.loc[start:]
+            self.series = self._series.loc[start:]
             self.start = min(self.series.index)
         
         if end is not None:
-            self.series = self.series.loc[:end]
+            self.series = self._series.loc[:end]
             self.end = max(self.series.index)
