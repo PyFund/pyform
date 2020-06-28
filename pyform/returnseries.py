@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 import copy
 import math
 import pandas as pd
-from typing import Optional
+from typing import Optional, Callable
 from pyform.timeseries import TimeSeries
 
 
@@ -74,6 +74,16 @@ class ReturnSeries(TimeSeries):
 
         return math.exp(sum(returns)) - 1
 
+    def _compound(self, method: str) -> Callable:
+
+        compound = {
+            "arithmetic": self._compound_arithmetic,
+            "geometric": self._compound_geometric,
+            "continuous": self._compound_continuous,
+        }
+
+        return compound[method]
+
     def to_freq(self, freq: str, method: str) -> pd.DataFrame:
         """Converts return series to a different (and lower) frequency.
 
@@ -95,13 +105,7 @@ class ReturnSeries(TimeSeries):
                 "Method should be one of 'geometric', 'arithmetic' or 'continuous'"
             )
 
-        compound = {
-            "arithmetic": self._compound_arithmetic,
-            "geometric": self._compound_geometric,
-            "continuous": self._compound_continuous,
-        }
-
-        return self.series.groupby(pd.Grouper(freq=freq)).agg(compound[method])
+        return self.series.groupby(pd.Grouper(freq=freq)).agg(self._compound(method))
 
     def to_week(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to weekly frequency.
@@ -267,3 +271,7 @@ class ReturnSeries(TimeSeries):
             )
 
         return result
+    
+    def get_total_return(self, method="geometric"):
+
+        return self._compound(method)(self.series.iloc[:,0])
