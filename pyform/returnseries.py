@@ -329,8 +329,10 @@ class ReturnSeries(TimeSeries):
         """Compute total return of the series
 
         Args:
-            method: method to use when compounding total return. Defaults to "geometric".
-            include_bm: whether to compute total return for benchmarks as well. Defaults to True.
+            method: method to use when compounding total return.
+                Defaults to "geometric".
+            include_bm: whether to compute total return for benchmarks as well.
+                Defaults to True.
             meta: whether to include meta data in output. Defaults to False.
                 Available meta are:
 
@@ -340,7 +342,7 @@ class ReturnSeries(TimeSeries):
 
         Returns:
             pd.DataFrame:
-            
+
                 * name: name of the series
                 * field: name of the field. In this case, it is 'total return' for all
                 * value: total return value, in decimals

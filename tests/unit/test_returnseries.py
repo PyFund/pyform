@@ -80,6 +80,7 @@ def test_corr():
     )
     assert corr.equals(expected_output)
 
+
 def test_total_return():
 
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
