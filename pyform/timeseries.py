@@ -150,6 +150,6 @@ class TimeSeries:
             self.series = self._series.copy().loc[start:]
         elif end is not None:
             self.series = self._series.copy().loc[:end]
-        
+
         self.start = min(self.series.index)
         self.end = max(self.series.index)

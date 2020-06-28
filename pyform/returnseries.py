@@ -1,8 +1,12 @@
-from typing import Optional
+import logging
 
+log = logging.getLogger(__name__)
+
+import copy
+import datetime
 import math
 import pandas as pd
-
+from typing import Optional
 from pyform.timeseries import TimeSeries
 
 
@@ -97,7 +101,7 @@ class ReturnSeries(TimeSeries):
             "continuous": self._compound_continuous,
         }
 
-        return self.df.groupby(pd.Grouper(freq=freq)).agg(compound[method])
+        return self.series.groupby(pd.Grouper(freq=freq)).agg(compound[method])
 
     def to_week(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to weekly frequency.
@@ -159,9 +163,106 @@ class ReturnSeries(TimeSeries):
 
         return self.to_freq("Y", method)
 
-    def add_benchmark(self, benchmark: 'ReturnSeries', name: Optional[str]=None):
+    def _normalize_daterange(self, series: "ReturnSeries"):
+
+        series = copy.deepcopy(series)
+        series.set_daterange(start=self.start, end=self.end)
+
+        return series
+
+    def add_benchmark(self, benchmark: "ReturnSeries", name: Optional[str] = None):
+        """Add a benchmark for the return series. A benchmark is useful and needed
+           in order to calculate:
+                * 'correlation': is the correlation between the return series and
+                    the benchmark
+                * 'beta': is the CAPM beta between the return series and the benchmark
+
+        Args:
+            benchmark: A benchmark. Should be a ReturnSeries object.
+            name: name of the benchmark. This will be used to display results. Defaults
+                to "None", which will use the column name of the benchmark.
+        """
 
         if name is None:
-            name = benchmark.df.columns[0]
+            name = benchmark.series.columns[0]
 
+        log.info(f"Adding benchmark. name={name}")
         self.benchmark[name] = benchmark
+
+    def get_corr(
+        self,
+        freq: Optional[str] = "M",
+        compound_method: Optional[str] = "geometric",
+        meta: Optional[bool] = False,
+    ):
+
+        ret = self.to_freq(freq=freq, method=compound_method)
+        n_ret = len(ret.index)
+
+        # Columns in the returned dataframe
+        bm_names = []
+        corr = []
+        start = []
+        end = []
+        skipped = []
+
+        for name, benchmark in self.benchmark.items():
+
+            try:
+
+                # Modify benchmark so it's in the same timerange as the returns series
+                benchmark = self._normalize_daterange(benchmark)
+
+                # Convert benchmark to desired frequency
+                # note this is done after it's time range has been normalized
+                # this is important as otherwise when frequency is changed, we may
+                # include additional days in the calculation
+                bm_ret = benchmark.to_freq(freq=freq, method=compound_method)
+
+                # Join returns and benchmark to calculate correlation
+                df = ret.join(bm_ret, on="datetime", how="inner")
+
+                # Add correlation to list
+                corr.append(df.corr().iloc[0, 1])
+
+                # Add benchmark to list of benchmark names
+                bm_names.append(name)
+
+                if meta:
+                    # Add start and end date used to compute correlation
+                    start.append(min(benchmark.start, self.start))
+                    end.append(min(benchmark.end, self.end))
+
+                    # Add number of rows skipped in calculation
+                    skipped.append(n_ret - len(df.index))
+
+            except Exception as e:
+
+                log.error(f"Cannot compute correlation: benchmark={name}: {e}")
+                pass
+
+        if meta:
+
+            result = pd.DataFrame(
+                data={
+                    "benchmark": bm_names,
+                    "field": "correlation",
+                    "value": corr,
+                    "start": start,
+                    "end": end,
+                    "total": n_ret,
+                    "skipped": skipped,
+                }
+            )
+
+        else:
+
+            result = pd.DataFrame(
+                data={
+                    "benchmark": bm_names,
+                    "field": "correlation",
+                    "value": corr,
+                }
+            )
+
+        return result

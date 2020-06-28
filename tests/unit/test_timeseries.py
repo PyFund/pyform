@@ -135,7 +135,7 @@ def test_init_from_db():
 def test_set_daterange():
 
     ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
-    
+
     ts.set_daterange("2020-01-01", "2020-01-31")
     assert ts.start == datetime.datetime.strptime("2020-01-02", "%Y-%m-%d")
     assert ts.series.index[0] == datetime.datetime.strptime("2020-01-02", "%Y-%m-%d")
