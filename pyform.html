@@ -134,6 +134,48 @@
 <dt id="pyform.returnseries.ReturnSeries">
 <em class="property">class </em><code class="sig-prename descclassname">pyform.returnseries.</code><code class="sig-name descname">ReturnSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyform.timeseries.TimeSeries" title="pyform.timeseries.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyform.timeseries.TimeSeries</span></code></a></p>
+<dl class="simple">
+<dt>A return series. It should be datetime indexed and</dt><dd><p>has one column of returns data.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>TimeSeries</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.add_benchmark">
+<code class="sig-name descname">add_benchmark</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">benchmark</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#pyform.returnseries.ReturnSeries" title="pyform.returnseries.ReturnSeries">pyform.returnseries.ReturnSeries</a></span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.add_benchmark" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Add a benchmark for the return series. A benchmark is useful and needed</dt><dd><dl class="simple">
+<dt>in order to calculate:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>‘correlation’: is the correlation between the return series and</dt><dd><p>the benchmark</p>
+</dd>
+</dl>
+</li>
+<li><p>‘beta’: is the CAPM beta between the return series and the benchmark</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>benchmark</strong> – A benchmark. Should be a ReturnSeries object.</p></li>
+<li><p><strong>name</strong> – name of the benchmark. This will be used to display results. Defaults
+to “None”, which will use the column name of the benchmark.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.get_corr">
+<code class="sig-name descname">get_corr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'M'</span></em>, <em class="sig-param"><span class="n">compound_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_corr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.to_freq">
 <code class="sig-name descname">to_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.to_freq" title="Permalink to this definition">¶</a></dt>
@@ -141,15 +183,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>freq</strong> (<em>str</em>) – frequency to convert the return series to.
+<li><p><strong>freq</strong> – frequency to convert the return series to.
 Available options can be found <a class="reference external" href="https://tinyurl.com/t78g6bh">here</a>.</p></li>
-<li><p><strong>method</strong> (<em>str</em>) – <p>compounding method when converting to lower frequency.</p>
-<ul>
-<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
-<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
-<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
-</ul>
-</p></li>
+<li><p><strong>method</strong> – compounding method when converting to lower frequency.
+* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
+* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
+* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -167,13 +206,10 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to monthly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
-<ul class="simple">
-<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
-<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
-<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
+* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
+* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
+* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in monthly frequency</p>
@@ -190,13 +226,10 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to quarterly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
-<ul class="simple">
-<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
-<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
-<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
+* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
+* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
+* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in quarterly frequency</p>
@@ -213,13 +246,10 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to weekly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
-<ul class="simple">
-<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
-<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
-<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
+* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
+* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
+* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in weekly frequency</p>
@@ -236,13 +266,10 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to annual frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
-<ul class="simple">
-<li><p>’geometric’: geometric compounding (1+r1) * (1+r2) - 1</p></li>
-<li><p>’arithmetic’: arithmetic compounding r1 + r2</p></li>
-<li><p>’continuous’: continous compounding exp(r1+r2) - 1</p></li>
-</ul>
-</p>
+<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
+* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
+* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
+* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in annual frequency</p>
@@ -296,6 +323,22 @@ it would only accept a “wide” dataframe and not a “long” dataframe.</p>
 <dt id="pyform.timeseries.TimeSeries.read_excel">
 <em class="property">classmethod </em><code class="sig-name descname">read_excel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.read_excel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.timeseries.TimeSeries.set_daterange">
+<code class="sig-name descname">set_daterange</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.set_daterange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the period of the series we are interested in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – the start date, in YYYY-MM-DD HH:MM:SS, hour is optional.
+Defaults to None.</p></li>
+<li><p><strong>end</strong> – the end date, in YYYY-MM-DD HH:MM:SS, hour is optional.
+Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
