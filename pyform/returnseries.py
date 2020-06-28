@@ -341,7 +341,7 @@ class ReturnSeries(TimeSeries):
                 * end: end date for calculating correlation
 
         Returns:
-            pd.DataFrame:
+            pd.DataFrame: total return results with the following columns
 
                 * name: name of the series
                 * field: name of the field. In this case, it is 'total return' for all

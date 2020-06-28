@@ -67,7 +67,7 @@ class TimeSeries:
             col: column to set as the datetime index for the DataFrame
 
         Raises:
-            ValueError: raised when column cannot be converted to datetime index
+            ValueError: when column cannot be converted to datetime index
 
         Returns:
             pd.DataFrame: a pandas dataframe with datetime index
@@ -111,8 +111,8 @@ class TimeSeries:
             with one column named as "date" or "datetime"
 
         Raises:
-            TypeError: raised when df is not a pandas dataframe
-            ValueError: raised when there is no datetime index and no
+            TypeError: when df is not a pandas dataframe
+            ValueError: when there is no datetime index and no
                 date or datetime column
 
         Returns:
@@ -181,8 +181,8 @@ class TimeSeries:
         """Infer the frequency of the time series
 
         Raises:
-            ValueError: multiple frequencies are detected
-            ValueError: no frequency can be detected
+            ValueError: when multiple frequencies are detected
+            ValueError: when no frequency can be detected
 
         Returns:
             str: frequency of the time series
