@@ -218,6 +218,8 @@ class ReturnSeries(TimeSeries):
 
             meta: Whether to include meta data. Defaults to False. Available meta are:
 
+                * freq: frequency used to compute correlation
+                * method: method used to compute correlation
                 * start: start date for calculating correlation
                 * end: end date for calculating correlation
                 * total: total number of data points in returns series
@@ -292,6 +294,8 @@ class ReturnSeries(TimeSeries):
                     "benchmark": bm_names,
                     "field": "correlation",
                     "value": corr,
+                    "freq": freq,
+                    "method": method,
                     "start": start,
                     "end": end,
                     "total": n_ret,

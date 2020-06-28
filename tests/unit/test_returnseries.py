@@ -78,6 +78,8 @@ def test_add_benchmark_no_name():
             "benchmark": ["SPY"],
             "field": "correlation",
             "value": [0.21224719919904408],
+            "freq": "M",
+            "method": "pearson",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
             "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
             "total": 80,
