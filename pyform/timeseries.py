@@ -24,7 +24,7 @@ class TimeSeries:
         # go to different timerange and comeback, without losing
         # any information
         self._series = df.copy()
-        self.series = df
+        self.series = df.copy()
 
         self.start = min(self.series.index)
         self.end = max(self.series.index)
@@ -134,12 +134,22 @@ class TimeSeries:
         if has_date:
             return self._set_col_as_datetime_index(df, "date")
 
-    def set_daterange(self, start: Optional[str]=None, end: Optional[str]=None):
+    def set_daterange(self, start: Optional[str] = None, end: Optional[str] = None):
+        """Sets the period of the series we are interested in.
 
-        if start is not None:
-            self.series = self._series.loc[start:]
-            self.start = min(self.series.index)
+        Args:
+            start: the start date, in YYYY-MM-DD HH:MM:SS, hour is optional.
+                Defaults to None.
+            end: the end date, in YYYY-MM-DD HH:MM:SS, hour is optional.
+                Defaults to None.
+        """
+
+        if start is not None and end is not None:
+            self.series = self._series.copy().loc[start:end]
+        elif start is not None:
+            self.series = self._series.copy().loc[start:]
+        elif end is not None:
+            self.series = self._series.copy().loc[:end]
         
-        if end is not None:
-            self.series = self._series.loc[:end]
-            self.end = max(self.series.index)
+        self.start = min(self.series.index)
+        self.end = max(self.series.index)
