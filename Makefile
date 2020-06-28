@@ -29,7 +29,7 @@ doc:
 	rm -rf docs
 	git add --all
 	git commit -m "Update Documentation"
-	git checkout dev
+	git checkout master
 
 # lint code
 lint:
