@@ -81,7 +81,7 @@ class TimeSeries:
             return df
         except Exception as err:
             raise ValueError(f"Error converting '{col}' to index: {err}")
-    
+
     @staticmethod
     def _freq_compare(freq1: str, freq2: str) -> bool:
         """Tests freq1 has a lower frequency than freq2.
@@ -177,7 +177,16 @@ class TimeSeries:
         self.start = min(self.series.index)
         self.end = max(self.series.index)
 
-    def _infer_freq(self):
+    def _infer_freq(self) -> str:
+        """Infer the frequency of the time series
+
+        Raises:
+            ValueError: multiple frequencies are detected
+            ValueError: no frequency can be detected
+
+        Returns:
+            str: frequency of the time series
+        """
 
         freq = set()
         max_check = min(len(self.series.index) - 10, 50)
