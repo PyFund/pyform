@@ -469,7 +469,7 @@ class ReturnSeries(TimeSeries):
         method: Optional[str] = "sample",
         compound_method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
-    ):
+    ) -> pd.DataFrame:
         """Compute annualized volatility of the series
 
         Args:
