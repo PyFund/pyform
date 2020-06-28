@@ -110,7 +110,7 @@ def test_init_from_csv():
     """
 
     ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
-    assert ts.df.iloc[0, 0] == 46.5
+    assert ts.df.iloc[0, 0] == 44.9
 
 def test_init_from_excel():
     """Validate the read_excel clasmethod can initiate
