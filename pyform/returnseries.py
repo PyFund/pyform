@@ -66,9 +66,9 @@ class ReturnSeries(TimeSeries):
         """Converts return series to a different (and lower) frequency.
 
         Args:
-            freq (str): frequency to convert the return series to.
+            freq: frequency to convert the return series to.
                 Available options can be found `here <https://tinyurl.com/t78g6bh>`_.
-            method (str): compounding method when converting to lower frequency.
+            method: compounding method when converting to lower frequency.
 
                 * 'geometric': geometric compounding (1+r1) * (1+r2) - 1
                 * 'arithmetic': arithmetic compounding r1 + r2
