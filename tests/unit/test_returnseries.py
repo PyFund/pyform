@@ -79,3 +79,67 @@ def test_corr():
         }
     )
     assert corr.equals(expected_output)
+
+def test_total_return():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    total_return = returns.get_total_return()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "total return",
+            "value": [-0.35300922502128473],
+        }
+    )
+    assert total_return.equals(expected_output)
+
+    # Single benchmark
+    returns.add_benchmark(spy)
+    total_return = returns.get_total_return()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "total return",
+            "value": [-0.35300922502128473, 0.6935467657365115],
+        }
+    )
+    assert total_return.equals(expected_output)
+
+    # meta=True
+    total_return = returns.get_total_return(meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY"],
+            "field": "total return",
+            "value": [-0.35300922502128473, 0.6935467657365115],
+            "method": "geometric",
+            "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert total_return.equals(expected_output)
+
+    # has benchmark, but include_bm=False
+    total_return = returns.get_total_return(include_bm=False)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR"],
+            "field": "total return",
+            "value": [-0.35300922502128473],
+        }
+    )
+    assert total_return.equals(expected_output)
+
+    # test multiple benchmarks
+    returns.add_benchmark(qqq)
+    total_return = returns.get_total_return()
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["TWTR", "SPY", "QQQ"],
+            "field": "total return",
+            "value": [-0.35300922502128473, 0.6935467657365115, 1.894217403555647],
+        }
+    )
+    assert total_return.equals(expected_output)

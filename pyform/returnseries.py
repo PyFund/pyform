@@ -284,8 +284,8 @@ class ReturnSeries(TimeSeries):
 
                 if meta:
                     # Add start and end date used to compute correlation
-                    start.append(min(benchmark.start, self.start))
-                    end.append(min(benchmark.end, self.end))
+                    start.append(benchmark.start)
+                    end.append(benchmark.end)
 
                     # Add number of rows skipped in calculation
                     skipped.append(n_ret - len(df.index))
@@ -319,10 +319,67 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_total_return(self, method="geometric"):
+    def get_total_return(
+        self,
+        method: Optional[str] = "geometric",
+        include_bm: Optional[bool] = True,
+        meta: Optional[bool] = False,
+    ):
 
-        return self._compound(method)(self.series.iloc[:, 0])
+        # Columns in the returned dataframe
+        names = []
+        total_return = []
+        start = []
+        end = []
 
-    def get_annualized_return(self, method=""):
+        names.append(self.series.columns[0])
+        total_return.append(self._compound(method)(self.series.iloc[:, 0]))
+        start.append(self.start)
+        end.append(self.end)
 
-        return None
+        if include_bm:
+            for name, benchmark in self.benchmark.items():
+
+                try:
+
+                    # Modify benchmark so it's in the same timerange as the
+                    # returns series
+                    benchmark = self._normalize_daterange(benchmark)
+                    names.append(name)
+                    total_return.append(
+                        self._compound(method)(benchmark.series.iloc[:, 0])
+                    )
+
+                    if meta:
+                        start.append(benchmark.start)
+                        end.append(benchmark.end)
+
+                except Exception as e:  # pragma: no cover
+
+                    log.error(f"Cannot compute total return: benchmark={name}: {e}")
+                    pass
+
+        if meta:
+
+            result = pd.DataFrame(
+                data={
+                    "name": names,
+                    "field": "total return",
+                    "value": total_return,
+                    "method": method,
+                    "start": start,
+                    "end": end,
+                }
+            )
+
+        else:
+
+            result = pd.DataFrame(
+                data={"name": names, "field": "total return", "value": total_return}
+            )
+
+        return result
+
+    def get_annualized_return(self, method: Optional[str] = "geometric"):
+
+        return NotImplemented
