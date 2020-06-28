@@ -337,8 +337,8 @@ class ReturnSeries(TimeSeries):
                 Available meta are:
 
                 * method: method used to compound total return
-                * start: start date for calculating correlation
-                * end: end date for calculating correlation
+                * start: start date for calculating total return
+                * end: end date for calculating total return
 
         Returns:
             pd.DataFrame: total return results with the following columns
@@ -346,6 +346,9 @@ class ReturnSeries(TimeSeries):
                 * name: name of the series
                 * field: name of the field. In this case, it is 'total return' for all
                 * value: total return value, in decimals
+
+            Data described in meta will also be available in the returned DataFrame if
+            meta is set to True.
         """
 
         # Columns in the returned dataframe
@@ -408,12 +411,37 @@ class ReturnSeries(TimeSeries):
         include_bm: Optional[bool] = True,
         meta: Optional[bool] = False,
     ):
+        """Compute annualized return of the series
+
+        Args:
+            method: method to use when compounding return. Defaults to "geometric".
+            include_bm: whether to compute annualized return for benchmarks as well.
+                Defaults to True.
+            meta: whether to include meta data in output. Defaults to False.
+                Available meta are:
+
+                * method: method used to compound annualized return
+                * start: start date for calculating annualized return
+                * end: end date for calculating annualized return
+
+        Returns:
+            pd.DataFrame: annualized return results with the following columns
+
+                * name: name of the series
+                * field: name of the field. In this case, it is 'annualized return'
+                    for all
+                * value: annualized return value, in decimals
+
+            Data described in meta will also be available in the returned DataFrame if
+            meta is set to True.
+        """
 
         result = self.get_total_return(method=method, include_bm=include_bm, meta=True)
         result["field"] = "annualized return"
-        result["days"] = (result["end"] - result["start"]) / pd.to_timedelta(
-            1, unit="D"
-        )
+
+        # find number of days
+        one_day = pd.to_timedelta(1, unit="D")
+        result["days"] = (result["end"] - result["start"]) / one_day
 
         years = result["days"] / 365.25
         if method == "geometric":
