@@ -146,9 +146,10 @@
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.add_benchmark">
 <code class="sig-name descname">add_benchmark</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">benchmark</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#pyform.returnseries.ReturnSeries" title="pyform.returnseries.ReturnSeries">pyform.returnseries.ReturnSeries</a></span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.add_benchmark" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Add a benchmark for the return series. A benchmark is useful and needed</dt><dd><dl class="simple">
-<dt>in order to calculate:</dt><dd><ul class="simple">
+<dd><dl>
+<dt>Add a benchmark for the return series. A benchmark is useful and needed</dt><dd><p>in order to calculate:</p>
+<blockquote>
+<div><ul class="simple">
 <li><dl class="simple">
 <dt>‘correlation’: is the correlation between the return series and</dt><dd><p>the benchmark</p>
 </dd>
@@ -156,8 +157,7 @@
 </li>
 <li><p>‘beta’: is the CAPM beta between the return series and the benchmark</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -185,10 +185,13 @@ to “None”, which will use the column name of the benchmark.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>freq</strong> – frequency to convert the return series to.
 Available options can be found <a class="reference external" href="https://tinyurl.com/t78g6bh">here</a>.</p></li>
-<li><p><strong>method</strong> – compounding method when converting to lower frequency.
-* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
-* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
-* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p><strong>method</strong> – <p>compounding method when converting to lower frequency.</p>
+<ul>
+<li><p>’geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p>’arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code></p></li>
+<li><p>’continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -206,10 +209,13 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to monthly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
-* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
-* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
-* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p>’arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code></p></li>
+<li><p>’continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in monthly frequency</p>
@@ -226,10 +232,13 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to quarterly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
-* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
-* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
-* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p>’arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code></p></li>
+<li><p>’continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in quarterly frequency</p>
@@ -246,10 +255,13 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to weekly frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
-* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
-* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
-* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p>’arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code></p></li>
+<li><p>’continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in weekly frequency</p>
@@ -266,10 +278,13 @@ Available options can be found <a class="reference external" href="https://tinyu
 <dd><p>Converts return series to annual frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – compounding method. Defaults to “geometric”.
-* ‘geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code>
-* ‘arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code>
-* ‘continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p>
+<dd class="field-odd"><p><strong>method</strong> – <p>compounding method. Defaults to “geometric”.</p>
+<ul class="simple">
+<li><p>’geometric’: geometric compounding <code class="docutils literal notranslate"><span class="pre">(1+r1)</span> <span class="pre">*</span> <span class="pre">(1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+<li><p>’arithmetic’: arithmetic compounding <code class="docutils literal notranslate"><span class="pre">r1</span> <span class="pre">+</span> <span class="pre">r2</span></code></p></li>
+<li><p>’continuous’: continous compounding <code class="docutils literal notranslate"><span class="pre">exp(r1+r2)</span> <span class="pre">-</span> <span class="pre">1</span></code></p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>return series, in annual frequency</p>
