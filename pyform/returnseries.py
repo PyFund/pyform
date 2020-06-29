@@ -14,12 +14,17 @@ class ReturnSeries(TimeSeries):
        has one column of returns data.
     """
 
-    def __init__(self, df):
+    def __init__(self, series, name: Optional[str] = None):
 
-        super().__init__(df)
+        super().__init__(series)
 
         self.benchmark = dict()
         self.risk_free = dict()
+
+        if name is None:
+            self.name = self.series.columns[0]
+        else:
+            self.name = name
 
     @staticmethod
     def _compound_geometric(returns: pd.Series) -> float:
@@ -206,7 +211,7 @@ class ReturnSeries(TimeSeries):
             name = benchmark.series.columns[0]
 
         log.info(f"Adding benchmark. name={name}")
-        self.benchmark[name] = benchmark
+        self.benchmark[name] = copy.deepcopy(benchmark)
 
     def add_risk_free(self, risk_free: "ReturnSeries", name: Optional[str] = None):
         """Add a risk free rate for the return series. A benchmark is useful and needed
@@ -226,7 +231,7 @@ class ReturnSeries(TimeSeries):
             name = risk_free.series.columns[0]
 
         log.info(f"Adding risk free rate. name={name}")
-        self.risk_free[name] = risk_free
+        self.risk_free[name] = copy.deepcopy(risk_free)
 
     def get_corr(
         self,
@@ -382,10 +387,12 @@ class ReturnSeries(TimeSeries):
         start = []
         end = []
 
-        names.append(self.series.columns[0])
+        names.append(self.name)
         total_return.append(self._compound(method)(self.series.iloc[:, 0]))
-        start.append(self.start)
-        end.append(self.end)
+
+        if meta:
+            start.append(self.start)
+            end.append(self.end)
 
         if include_bm:
             for name, benchmark in self.benchmark.items():
@@ -545,8 +552,10 @@ class ReturnSeries(TimeSeries):
 
         names.append(ret.columns[0])
         ann_vol.append(vol)
-        start.append(self.start)
-        end.append(self.end)
+
+        if meta:
+            start.append(self.start)
+            end.append(self.end)
 
         if include_bm:
             for name, benchmark in self.benchmark.items():
@@ -615,10 +624,11 @@ class ReturnSeries(TimeSeries):
             freq: Returns are converted to the same frequency before Sharpe ratio
                 is compuated. Defaults to "M".
             risk_free: the risk free rate to use. Can be a float or a string. If is
-                float, use the value as annualized risk free return. If is string,
-                look for the corresponding DataFrame of risk free rate in
-                ``self.risk_free``. ``self.risk_free`` can be set via the
-                ``add_risk_free()`` class method. Defaults to 0.
+                float, use the value as annualized risk free return. Should be given
+                in decimals. i.e. 1% annual cash return will be entered as
+                ``annualized_return=0.01``. If is string, look for the corresponding
+                DataFrame of risk free rate in ``self.risk_free``. ``self.risk_free``
+                can be set via the ``add_risk_free()`` class method. Defaults to 0.
             include_bm: whether to compute Sharpe ratio for benchmarks as well.
                 Defaults to True.
             compound_method: method to use when compounding return.
@@ -634,7 +644,7 @@ class ReturnSeries(TimeSeries):
         Returns:
             pd.DataFrame: Sharpe ratio with the following columns
 
-                * name: name of the series
+                * names: name of the series
                 * field: name of the field. In this case, it is 'Sharpe ratio'
                     for all
                 * value: Shapre ratio value
@@ -643,37 +653,129 @@ class ReturnSeries(TimeSeries):
             meta is set to True.
         """
 
-        # Convert series to the desired frequency
-        ret = self.get_annualized_return(
-            method=compound_method, include_bm=include_bm, meta=meta
-        )
-        vol = self.get_annualized_volatility(
-            freq=freq, compound_method=compound_method, include_bm=include_bm, meta=True
-        )
-
         # create risk free rate
         if isinstance(risk_free, str):
             try:
                 rf = self.risk_free[risk_free]
             except KeyError:
                 raise ValueError(f"Risk free rate is not set: risk_free={risk_free}")
-
-            rf_by_series = []
-
-            for i in range(len(vol)):
-                rf = self._normalize_daterange(rf)
-                rf = rf.get_annualized_return(method=compound_method, include_bm=False)
-                rf = rf["value"][0]
         elif isinstance(risk_free, float) or isinstance(risk_free, int):
-            rf = risk_free
+            rf = CashSeries.constant(risk_free, self.start, self.end)
         else:
             raise TypeError(
-                "Risk free should be str, float, or int." f"Received: {type(risk_free)}"
+                "Risk free should be str, float, or int." f"received={type(risk_free)}"
             )
 
-        result = ret
-        result["value"] = (result["value"] - rf) / vol["value"]
-        result["field"] = "sharpe ratio"
+        # create sharpe for main series
+        names = []
+        sharpe = []
+        start = []
+        end = []
+        risk_free = []
+
+        rf_name = rf.series.columns[0]
+
+        # Make sure the start date is the max of start date of rf and returns,
+        # and end date is the min of end date of rf and returns
+        start_date = max(rf.start, self.start)
+        end_date = min(rf.end, self.end)
+
+        rf_use = copy.deepcopy(rf)
+        ret_use = copy.deepcopy(self)
+        rf_use.set_daterange(start_date, end_date)
+        ret_use.set_daterange(start_date, end_date)
+        series_name = ret_use.series.columns[0]
+
+        # compute excess return over rf rate
+        df = ret_use.series.merge(
+            rf_use.series, on="datetime", how="outer", sort=True
+        ).fillna(0)
+        df[series_name] -= df[rf_name]
+        df = df.drop(rf_name, axis="columns")
+
+        series = ReturnSeries(df)
+        ann_ret = series.get_annualized_return(method=compound_method)["value"][0]
+        ann_vol = series.get_annualized_volatility(
+            freq=freq, compound_method=compound_method
+        )["value"][0]
+        ratio = ann_ret / ann_vol
+
+        names.append(self.name)
+        sharpe.append(ratio)
+
+        if meta:
+            rf_ann = rf_use.get_annualized_return(method=compound_method)["value"][0]
+            rf_ann = f"{round(rf_ann*100, 2)}%"
+            start.append(series.start)
+            end.append(series.end)
+            risk_free.append(f"{rf_name}: {rf_ann}")
+
+        if include_bm:
+            for name, benchmark in self.benchmark.items():
+
+                try:
+
+                    start_date = max(rf.start, benchmark.start)
+                    end_date = min(rf.end, benchmark.end)
+
+                    rf_use = copy.deepcopy(rf)
+                    benchmark = self._normalize_daterange(benchmark)
+
+                    rf_use.set_daterange(start_date, end_date)
+                    benchmark.set_daterange(start_date, end_date)
+                    bm_name = benchmark.series.columns[0]
+
+                    df = benchmark.series.merge(
+                        rf_use.series, on="datetime", how="outer", sort=True
+                    ).fillna(0)
+                    df[bm_name] -= df[rf_name]
+                    df = df.drop(rf_name, axis="columns")
+
+                    series = ReturnSeries(df)
+                    ann_ret = series.get_annualized_return(method=compound_method)[
+                        "value"
+                    ][0]
+                    ann_vol = series.get_annualized_volatility(
+                        freq=freq, compound_method=compound_method
+                    )["value"][0]
+                    ratio = ann_ret / ann_vol
+
+                    names.append(name)
+                    sharpe.append(ratio)
+
+                    if meta:
+                        rf_ann = rf_use.get_annualized_return(method=compound_method)[
+                            "value"
+                        ][0]
+                        rf_ann = f"{round(rf_ann*100, 2)}%"
+                        start.append(series.start)
+                        end.append(series.end)
+                        risk_free.append(f"{rf_name}: {rf_ann}")
+
+                except Exception as e:  # pragma: no cover
+
+                    log.error("Cannot compute sharpe ratio: " f"benchmark={name}: {e}")
+                    pass
+
+        if meta:
+
+            result = pd.DataFrame(
+                data={
+                    "name": names,
+                    "field": "sharpe ratio",
+                    "value": sharpe,
+                    "freq": freq,
+                    "risk_free": risk_free,
+                    "start": start,
+                    "end": end,
+                }
+            )
+
+        else:
+
+            result = pd.DataFrame(
+                data={"name": names, "field": "sharpe ratio", "value": sharpe}
+            )
 
         return result
 
@@ -683,8 +785,8 @@ class CashSeries(ReturnSeries):
     def constant(
         cls,
         annualized_return: Optional[Union[float, int]] = 0,
-        start: Optional[str] = "1900-01-01",
-        end: Optional[str] = "2049-12-31",
+        start: Optional[str] = "1980-01-01",
+        end: Optional[str] = "2029-12-31",
     ):
         """Create a constant cash daily returns stream
 

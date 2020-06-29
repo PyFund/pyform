@@ -177,8 +177,8 @@ class TimeSeries:
         self.start = min(self.series.index)
         self.end = max(self.series.index)
 
-    def reset_daterange(self):
-        """Reset data to its initial date range
+    def reset(self):
+        """Reset data to its initial state
         """
 
         self.series = self._series.copy()

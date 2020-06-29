@@ -127,7 +127,7 @@ def test_reset_daterange():
     ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
 
     ts.set_daterange("2020-01-01", "2020-01-31")
-    ts.reset_daterange()
+    ts.reset()
     assert ts.start == datetime.datetime.strptime("2013-11-07", "%Y-%m-%d")
     assert ts.series.index[0] == datetime.datetime.strptime("2013-11-07", "%Y-%m-%d")
     assert ts.end == datetime.datetime.strptime("2020-06-26", "%Y-%m-%d")

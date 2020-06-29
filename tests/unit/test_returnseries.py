@@ -1,12 +1,18 @@
 import datetime
 import pytest
 import pandas as pd
-from pyform.returnseries import ReturnSeries
+from pyform.returnseries import ReturnSeries, CashSeries
 
 returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 spy = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
 qqq = ReturnSeries.read_csv("tests/unit/data/qqq_returns.csv")
-libor1m = ReturnSeries.read_fred_libor_1m()
+libor1m = ReturnSeries.read_csv("tests/unit/data/libor1m_returns.csv")
+
+
+def test_init():
+
+    df = pd.read_csv("tests/unit/data/twitter_returns.csv")
+    ReturnSeries(df, "Twitter")
 
 
 def test_to_period():
@@ -25,11 +31,20 @@ def test_to_period():
 
 def test_add_benchmark():
 
-    returns.add_benchmark(spy, "SPY")
-    assert "SPY" in returns.benchmark
+    returns.add_benchmark(spy, "S&P 500")
+    assert "S&P 500" in returns.benchmark
 
     returns.add_benchmark(qqq)
     assert "QQQ" in returns.benchmark
+
+
+def test_add_risk_free():
+
+    returns.add_risk_free(libor1m, "libor")
+    assert "libor" in returns.risk_free
+
+    returns.add_risk_free(libor1m)
+    assert "LIBOR_1M" in returns.risk_free
 
 
 def test_corr():
@@ -45,7 +60,7 @@ def test_corr():
 
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
-        data={"name": ["SPY"], "field": "correlation", "value": [0.21224719919904408],}
+        data={"name": ["SPY"], "field": "correlation", "value": [0.21224719919904408]}
     )
     assert corr.equals(expected_output)
 
@@ -301,3 +316,75 @@ def test_annualized_volatility():
         }
     )
     assert ann_vol.equals(expected_output)
+
+
+def test_sharpe_ratio():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
+
+    # No benchmark
+    sharpe_ratio = returns.get_sharpe_ratio()
+    expected_output = pd.DataFrame(
+        data={"name": ["SPY"], "field": "sharpe ratio", "value": [0.5319582050650019]}
+    )
+    assert sharpe_ratio.equals(expected_output)
+
+    # daily
+    sharpe_ratio = returns.get_sharpe_ratio(freq="D", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["SPY"],
+            "field": "sharpe ratio",
+            "value": [0.392952489244965],
+            "freq": "D",
+            "risk_free": "cash_0: 0.0%",
+            "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert sharpe_ratio.equals(expected_output)
+
+    # use libor for risk free rate
+    returns.add_risk_free(libor1m, "libor")
+    sharpe_ratio = returns.get_sharpe_ratio(freq="D", risk_free="libor", meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["SPY"],
+            "field": "sharpe ratio",
+            "value": [0.31751335834676475],
+            "freq": "D",
+            "risk_free": "LIBOR_1M: 1.54%",
+            "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-19", "%Y-%m-%d"),
+        }
+    )
+    assert sharpe_ratio.equals(expected_output)
+
+    # with benchmark
+    returns.add_benchmark(qqq)
+    sharpe_ratio = returns.get_sharpe_ratio(meta=True)
+    expected_output = pd.DataFrame(
+        data={
+            "name": ["SPY", "QQQ"],
+            "field": "sharpe ratio",
+            "value": [0.5319582050650019, 0.8028838684875361],
+            "freq": "M",
+            "risk_free": "cash_0: 0.0%",
+            "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
+            "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
+        }
+    )
+    assert sharpe_ratio.equals(expected_output)
+
+    # wrong key
+    with pytest.raises(ValueError):
+        returns.get_sharpe_ratio(risk_free="not-exist")
+
+    # wrong type
+    with pytest.raises(TypeError):
+        returns.get_sharpe_ratio(risk_free=libor1m)
+
+
+def test_libor_fred():
+
+    CashSeries.read_fred_libor_1m()
