@@ -177,6 +177,14 @@ class TimeSeries:
         self.start = min(self.series.index)
         self.end = max(self.series.index)
 
+    def reset_daterange(self):
+        """Reset data to its initial date range
+        """
+
+        self.series = self._series.copy()
+        self.start = min(self.series.index)
+        self.end = max(self.series.index)
+
     def _infer_freq(self) -> str:
         """Infer the frequency of the time series
 
