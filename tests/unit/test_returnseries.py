@@ -6,6 +6,7 @@ from pyform.returnseries import ReturnSeries
 returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 spy = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
 qqq = ReturnSeries.read_csv("tests/unit/data/qqq_returns.csv")
+libor1m = ReturnSeries.read_fred_libor_1m()
 
 
 def test_to_period():
@@ -44,18 +45,14 @@ def test_corr():
 
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
-        data={
-            "benchmark": ["SPY"],
-            "field": "correlation",
-            "value": [0.21224719919904408],
-        }
+        data={"name": ["SPY"], "field": "correlation", "value": [0.21224719919904408],}
     )
     assert corr.equals(expected_output)
 
     corr = returns.get_corr(meta=True)
     expected_output = pd.DataFrame(
         data={
-            "benchmark": ["SPY"],
+            "name": ["SPY"],
             "field": "correlation",
             "value": [0.21224719919904408],
             "freq": "M",
@@ -73,7 +70,7 @@ def test_corr():
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
         data={
-            "benchmark": ["SPY", "QQQ"],
+            "name": ["SPY", "QQQ"],
             "field": "correlation",
             "value": [0.21224719919904408, 0.27249109347246325],
         }

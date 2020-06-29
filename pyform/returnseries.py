@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 import copy
 import math
 import pandas as pd
-from typing import Optional, Callable
+from typing import Callable, Optional, Union
 from pyform.timeseries import TimeSeries
 
 
@@ -19,6 +19,40 @@ class ReturnSeries(TimeSeries):
         super().__init__(df)
 
         self.benchmark = dict()
+        self.risk_free = dict()
+
+    @classmethod
+    def read_fred_libor_1m(cls):
+        """Create one month libor daily returns from fred data
+
+        Returns:
+            pyform.ReturnSeries: one month libor daily returns
+        """
+
+        # Load St.Louis Fed Data
+        libor1m = pd.read_csv(
+            "https://fred.stlouisfed.org/graph/fredgraph.csv?id=USD1MTD156N"
+        )
+
+        # Format Data
+        libor1m.columns = ["date", "LIBOR_1M"]
+        libor1m = libor1m[libor1m["LIBOR_1M"] != "."]
+        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"].astype(float)
+        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"] / 100
+
+        # Create Return Series
+        libor1m = cls(libor1m)
+
+        # Daily Value is in Annualized Form, Change it to Daily Return
+        one_year = pd.to_timedelta(365.25, unit="D")
+        years = (libor1m.end - libor1m.start) / one_year
+        sample_per_year = len(libor1m.series.index) / years
+        libor1m._series["LIBOR_1M"] += 1
+        libor1m._series["LIBOR_1M"] **= 1 / sample_per_year
+        libor1m._series["LIBOR_1M"] -= 1
+        libor1m.series = libor1m._series.copy()
+
+        return libor1m
 
     @staticmethod
     def _compound_geometric(returns: pd.Series) -> float:
@@ -304,7 +338,7 @@ class ReturnSeries(TimeSeries):
 
             result = pd.DataFrame(
                 data={
-                    "benchmark": bm_names,
+                    "name": bm_names,
                     "field": "correlation",
                     "value": corr,
                     "freq": freq,
@@ -319,7 +353,7 @@ class ReturnSeries(TimeSeries):
         else:
 
             result = pd.DataFrame(
-                data={"benchmark": bm_names, "field": "correlation", "value": corr}
+                data={"name": bm_names, "field": "correlation", "value": corr}
             )
 
         return result
@@ -485,7 +519,7 @@ class ReturnSeries(TimeSeries):
                 Available meta are:
 
                 * freq: frequency of the series
-                * method: method used to compound annualized volatility
+                * method: method used to compute annualized volatility
                 * start: start date for calculating annualized volatility
                 * end: end date for calculating annualized volatility
 
@@ -577,5 +611,81 @@ class ReturnSeries(TimeSeries):
             result = pd.DataFrame(
                 data={"name": names, "field": "annualized volatility", "value": ann_vol}
             )
+
+        return result
+
+    def get_sharpe_ratio(
+        self,
+        freq: Optional[str] = "M",
+        risk_free: Optional[Union[float, int, str]] = 0,
+        include_bm: Optional[bool] = True,
+        compound_method: Optional[str] = "geometric",
+        meta: Optional[bool] = False,
+    ) -> pd.DataFrame:
+        """Compute Sharpe ratio of the series
+
+        Args:
+            freq: Returns are converted to the same frequency before Sharpe ratio
+                is compuated. Defaults to "M".
+            risk_free: the risk free rate to use. Can be a float or a string. If is
+                float, use the value as annualized risk free return. If is string,
+                look for the corresponding DataFrame of risk free rate in
+                ``self.risk_free``. ``self.risk_free`` can be set via the
+                ``add_risk_free()`` class method. Defaults to 0.
+            include_bm: whether to compute Sharpe ratio for benchmarks as well.
+                Defaults to True.
+            compound_method: method to use when compounding return.
+                Defaults to "geometric".
+            meta: whether to include meta data in output. Defaults to False.
+                Available meta are:
+
+                * freq: frequency of the series
+                * risk_free: the risk free rate used
+                * start: start date for calculating Sharpe ratio
+                * end: end date for calculating Sharpe ratio
+
+        Returns:
+            pd.DataFrame: Sharpe ratio with the following columns
+
+                * name: name of the series
+                * field: name of the field. In this case, it is 'Sharpe ratio'
+                    for all
+                * value: Shapre ratio value
+
+            Data described in meta will also be available in the returned DataFrame if
+            meta is set to True.
+        """
+
+        # Convert series to the desired frequency
+        ret = self.get_annualized_return(
+            method=compound_method, include_bm=include_bm, meta=meta
+        )
+        vol = self.get_annualized_volatility(
+            freq=freq, compound_method=compound_method, include_bm=include_bm, meta=True
+        )
+
+        # create risk free rate
+        if isinstance(risk_free, str):
+            try:
+                rf = self.risk_free[risk_free]
+            except KeyError:
+                raise ValueError(f"Risk free rate is not set: risk_free={risk_free}")
+
+            rf_by_series = []
+
+            for i in range(len(vol)):
+                rf = self._normalize_daterange(rf)
+                rf = rf.get_annualized_return(method=compound_method, include_bm=False)
+                rf = rf["value"][0]
+        elif isinstance(risk_free, float) or isinstance(risk_free, int):
+            rf = risk_free
+        else:
+            raise TypeError(
+                "Risk free should be str, float, or int." f"Received: {type(risk_free)}"
+            )
+
+        result = ret
+        result["value"] = (result["value"] - rf) / vol["value"]
+        result["field"] = "sharpe ratio"
 
         return result
