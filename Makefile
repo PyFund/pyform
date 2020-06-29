@@ -49,3 +49,6 @@ coverage:
 	make activate
 	coverage run -m pytest tests
 	coverage html
+
+requirements:
+	pipenv lock -r > requirements.txt
