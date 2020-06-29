@@ -715,11 +715,11 @@ class ReturnSeries(TimeSeries):
 
                 try:
 
-                    start_date = max(rf.start, benchmark.start)
-                    end_date = min(rf.end, benchmark.end)
-
                     rf_use = copy.deepcopy(rf)
                     benchmark = self._normalize_daterange(benchmark)
+
+                    start_date = max(rf.start, benchmark.start)
+                    end_date = min(rf.end, benchmark.end)
 
                     rf_use.set_daterange(start_date, end_date)
                     benchmark.set_daterange(start_date, end_date)
