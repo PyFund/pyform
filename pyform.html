@@ -131,8 +131,47 @@
 <div class="section" id="module-pyform.returnseries">
 <span id="pyform-returnseries-module"></span><h2>pyform.returnseries module<a class="headerlink" href="#module-pyform.returnseries" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt id="pyform.returnseries.CashSeries">
+<em class="property">class </em><code class="sig-prename descclassname">pyform.returnseries.</code><code class="sig-name descname">CashSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.CashSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyform.returnseries.ReturnSeries" title="pyform.returnseries.ReturnSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyform.returnseries.ReturnSeries</span></code></a></p>
+<dl class="py method">
+<dt id="pyform.returnseries.CashSeries.constant">
+<em class="property">classmethod </em><code class="sig-name descname">constant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">annualized_return</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>float<span class="p">, </span>int<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'1980-01-01'</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'2029-12-31'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.CashSeries.constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a constant cash daily returns stream</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>annualized_return</strong> – Annualized return of the cash, in decimals.
+i.e. 1% annual cash return will be entered as
+<code class="docutils literal notranslate"><span class="pre">annualized_return=0.01</span></code>. Defaults to 0.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>constant return cash stream</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pyform.CashSeries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.CashSeries.read_fred_libor_1m">
+<em class="property">classmethod </em><code class="sig-name descname">read_fred_libor_1m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.CashSeries.read_fred_libor_1m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create one month libor daily returns from fred data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>one month libor daily returns</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pyform.CashSeries</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="pyform.returnseries.ReturnSeries">
-<em class="property">class </em><code class="sig-prename descclassname">pyform.returnseries.</code><code class="sig-name descname">ReturnSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pyform.returnseries.</code><code class="sig-name descname">ReturnSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyform.timeseries.TimeSeries" title="pyform.timeseries.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyform.timeseries.TimeSeries</span></code></a></p>
 <p>A return series. It should be datetime indexed and
 has one column of returns data.</p>
@@ -159,6 +198,30 @@ has one column of returns data.</p>
 <li><p><strong>benchmark</strong> – A benchmark. Should be a ReturnSeries object.</p></li>
 <li><p><strong>name</strong> – name of the benchmark. This will be used to display results. Defaults
 to “None”, which will use the column name of the benchmark.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.add_risk_free">
+<code class="sig-name descname">add_risk_free</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">risk_free</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#pyform.returnseries.ReturnSeries" title="pyform.returnseries.ReturnSeries">pyform.returnseries.ReturnSeries</a></span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.add_risk_free" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Add a risk free rate for the return series. A benchmark is useful and needed</dt><dd><p>in order to calculate:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘sharpe ratio’</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>risk_free</strong> – A risk free rate. Should be a ReturnSeries object.</p></li>
+<li><p><strong>name</strong> – name of the risk free rate. This will be used to display results.
+Defaults to “None”, which will use the column name of the risk free
+rate.</p></li>
 </ul>
 </dd>
 </dl>
@@ -209,7 +272,7 @@ meta is set to True.</p>
 
 <dl class="py method">
 <dt id="pyform.returnseries.ReturnSeries.get_annualized_volatility">
-<code class="sig-name descname">get_annualized_volatility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'M'</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'sample'</span></em>, <em class="sig-param"><span class="n">compound_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_annualized_volatility" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_annualized_volatility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'M'</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'sample'</span></em>, <em class="sig-param"><span class="n">compound_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_annualized_volatility" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute annualized volatility of the series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -226,7 +289,7 @@ Defaults to “geometric”.</p></li>
 Available meta are:</p>
 <ul>
 <li><p>freq: frequency of the series</p></li>
-<li><p>method: method used to compound annualized volatility</p></li>
+<li><p>method: method used to compute annualized volatility</p></li>
 <li><p>start: start date for calculating annualized volatility</p></li>
 <li><p>end: end date for calculating annualized volatility</p></li>
 </ul>
@@ -305,6 +368,59 @@ meta is set to True.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyform.returnseries.ReturnSeries.get_sharpe_ratio">
+<code class="sig-name descname">get_sharpe_ratio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'M'</span></em>, <em class="sig-param"><span class="n">risk_free</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>float<span class="p">, </span>int<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">include_bm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compound_method</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'geometric'</span></em>, <em class="sig-param"><span class="n">meta</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.returnseries.ReturnSeries.get_sharpe_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Sharpe ratio of the series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> – Returns are converted to the same frequency before Sharpe ratio
+is compuated. Defaults to “M”.</p></li>
+<li><p><strong>risk_free</strong> – the risk free rate to use. Can be a float or a string. If is
+float, use the value as annualized risk free return. Should be given
+in decimals. i.e. 1% annual cash return will be entered as
+<code class="docutils literal notranslate"><span class="pre">annualized_return=0.01</span></code>. If is string, look for the corresponding
+DataFrame of risk free rate in <code class="docutils literal notranslate"><span class="pre">self.risk_free</span></code>. <code class="docutils literal notranslate"><span class="pre">self.risk_free</span></code>
+can be set via the <code class="docutils literal notranslate"><span class="pre">add_risk_free()</span></code> class method. Defaults to 0.</p></li>
+<li><p><strong>include_bm</strong> – whether to compute Sharpe ratio for benchmarks as well.
+Defaults to True.</p></li>
+<li><p><strong>compound_method</strong> – method to use when compounding return.
+Defaults to “geometric”.</p></li>
+<li><p><strong>meta</strong> – <p>whether to include meta data in output. Defaults to False.
+Available meta are:</p>
+<ul>
+<li><p>freq: frequency of the series</p></li>
+<li><p>risk_free: the risk free rate used</p></li>
+<li><p>start: start date for calculating Sharpe ratio</p></li>
+<li><p>end: end date for calculating Sharpe ratio</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>Sharpe ratio with the following columns</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>names: name of the series</p></li>
+<li><dl class="simple">
+<dt>field: name of the field. In this case, it is ‘Sharpe ratio’</dt><dd><p>for all</p>
+</dd>
+</dl>
+</li>
+<li><p>value: Shapre ratio value</p></li>
+</ul>
+</div></blockquote>
+<p>Data described in meta will also be available in the returned DataFrame if
+meta is set to True.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,6 +627,12 @@ it would only accept a “wide” dataframe and not a “long” dataframe.</p>
 <dt id="pyform.timeseries.TimeSeries.read_excel">
 <em class="property">classmethod </em><code class="sig-name descname">read_excel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.read_excel" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="pyform.timeseries.TimeSeries.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyform.timeseries.TimeSeries.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset data to its initial state</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="pyform.timeseries.TimeSeries.set_daterange">
