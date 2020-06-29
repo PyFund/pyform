@@ -21,39 +21,6 @@ class ReturnSeries(TimeSeries):
         self.benchmark = dict()
         self.risk_free = dict()
 
-    @classmethod
-    def read_fred_libor_1m(cls):
-        """Create one month libor daily returns from fred data
-
-        Returns:
-            pyform.ReturnSeries: one month libor daily returns
-        """
-
-        # Load St.Louis Fed Data
-        libor1m = pd.read_csv(
-            "https://fred.stlouisfed.org/graph/fredgraph.csv?id=USD1MTD156N"
-        )
-
-        # Format Data
-        libor1m.columns = ["date", "LIBOR_1M"]
-        libor1m = libor1m[libor1m["LIBOR_1M"] != "."]
-        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"].astype(float)
-        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"] / 100
-
-        # Create Return Series
-        libor1m = cls(libor1m)
-
-        # Daily Value is in Annualized Form, Change it to Daily Return
-        one_year = pd.to_timedelta(365.25, unit="D")
-        years = (libor1m.end - libor1m.start) / one_year
-        sample_per_year = len(libor1m.series.index) / years
-        libor1m._series["LIBOR_1M"] += 1
-        libor1m._series["LIBOR_1M"] **= 1 / sample_per_year
-        libor1m._series["LIBOR_1M"] -= 1
-        libor1m.series = libor1m._series.copy()
-
-        return libor1m
-
     @staticmethod
     def _compound_geometric(returns: pd.Series) -> float:
         """Performs geometric compounding.
@@ -240,6 +207,26 @@ class ReturnSeries(TimeSeries):
 
         log.info(f"Adding benchmark. name={name}")
         self.benchmark[name] = benchmark
+
+    def add_risk_free(self, risk_free: "ReturnSeries", name: Optional[str] = None):
+        """Add a risk free rate for the return series. A benchmark is useful and needed
+           in order to calculate:
+
+                * 'sharpe ratio'
+
+
+        Args:
+            risk_free: A risk free rate. Should be a ReturnSeries object.
+            name: name of the risk free rate. This will be used to display results.
+                Defaults to "None", which will use the column name of the risk free
+                rate.
+        """
+
+        if name is None:
+            name = risk_free.series.columns[0]
+
+        log.info(f"Adding risk free rate. name={name}")
+        self.risk_free[name] = risk_free
 
     def get_corr(
         self,
@@ -689,3 +676,74 @@ class ReturnSeries(TimeSeries):
         result["field"] = "sharpe ratio"
 
         return result
+
+
+class CashSeries(ReturnSeries):
+    @classmethod
+    def constant(
+        cls,
+        annualized_return: Optional[Union[float, int]] = 0,
+        start: Optional[str] = "1900-01-01",
+        end: Optional[str] = "2049-12-31",
+    ):
+        """Create a constant cash daily returns stream
+
+        Args:
+            annualized_return: Annualized return of the cash, in decimals.
+                i.e. 1% annual cash return will be entered as
+                ``annualized_return=0.01``. Defaults to 0.
+
+        Returns:
+            pyform.CashSeries: constant return cash stream
+        """
+
+        dates = pd.date_range(start=start, end=end, freq="B")
+
+        one_year = pd.to_timedelta(365.25, unit="D")
+        years = (dates[-1] - dates[1]) / one_year
+        sample_per_year = len(dates) / years
+
+        # TODO: add other compounding method
+        daily_ret = 1 + annualized_return
+        daily_ret **= 1 / sample_per_year
+        daily_ret -= 1
+
+        daily_ret = pd.DataFrame(
+            data={"date": dates, f"cash_{annualized_return}": daily_ret}
+        )
+
+        return cls(daily_ret)
+
+    @classmethod
+    def read_fred_libor_1m(cls):
+        """Create one month libor daily returns from fred data
+
+        Returns:
+            pyform.CashSeries: one month libor daily returns
+        """
+
+        # Load St.Louis Fed Data
+        libor1m = pd.read_csv(
+            "https://fred.stlouisfed.org/graph/fredgraph.csv?id=USD1MTD156N"
+        )
+
+        # Format Data
+        libor1m.columns = ["date", "LIBOR_1M"]
+        libor1m = libor1m[libor1m["LIBOR_1M"] != "."]
+        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"].astype(float)
+        libor1m["LIBOR_1M"] = libor1m["LIBOR_1M"] / 100
+
+        # Create Return Series
+        libor1m = cls(libor1m)
+
+        # Daily Value is in Annualized Form, Change it to Daily Return
+        # TODO: See if this should be continous compounding
+        one_year = pd.to_timedelta(365.25, unit="D")
+        years = (libor1m.end - libor1m.start) / one_year
+        sample_per_year = len(libor1m.series.index) / years
+        libor1m._series["LIBOR_1M"] += 1
+        libor1m._series["LIBOR_1M"] **= 1 / sample_per_year
+        libor1m._series["LIBOR_1M"] -= 1
+        libor1m.series = libor1m._series.copy()
+
+        return libor1m
