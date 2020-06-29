@@ -41,6 +41,7 @@ lint:
 
 # create test
 test:
+	make lint
 	pytest tests --cov
 
 # create coverage report
