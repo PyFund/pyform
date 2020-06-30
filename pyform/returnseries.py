@@ -5,8 +5,10 @@ log = logging.getLogger(__name__)
 import copy
 import math
 import pandas as pd
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 from pyform.timeseries import TimeSeries
+from pyform.returns.compound import compound
+from pyform.util.freq import is_lower_freq
 
 
 class ReturnSeries(TimeSeries):
@@ -25,67 +27,6 @@ class ReturnSeries(TimeSeries):
             self.name = self.series.columns[0]
         else:
             self.name = name
-
-    @staticmethod
-    def _compound_geometric(returns: pd.Series) -> float:
-        """Performs geometric compounding.
-
-        e.g. if there are 3 returns r1, r2, r3,
-        calculate (1+r1) * (1+r2) * (1+r3) - 1
-
-        Args:
-            returns: pandas series of returns, in decimals.
-                i.e. 3% should be expressed as 0.03, not 3.
-
-        Returns:
-            float: total compounded return
-        """
-
-        return (1 + returns).prod() - 1
-
-    @staticmethod
-    def _compound_arithmetic(returns: pd.Series) -> float:
-        """Performs arithmatic compounding.
-
-        e.g. if there are 3 returns r1, r2, r3,
-        calculate ``r1 + r2`` + r3
-
-        Args:
-            returns: pandas series of returns, in decimals.
-                i.e. 3% should be expressed as 0.03, not 3.
-
-        Returns:
-            float: total compounded return
-        """
-
-        return sum(returns)
-
-    @staticmethod
-    def _compound_continuous(returns: pd.Series) -> float:
-        """Performs continuous compounding.
-
-        e.g. if there are 3 returns r1, r2, r3,
-        calculate exp(``r1 + r2`` + r3) - 1
-
-        Args:
-            returns: pandas series of returns, in decimals.
-                i.e. 3% should be expressed as 0.03, not 3.
-
-        Returns:
-            float: total compounded return
-        """
-
-        return math.exp(sum(returns)) - 1
-
-    def _compound(self, method: str) -> Callable:
-
-        compound = {
-            "arithmetic": self._compound_arithmetic,
-            "geometric": self._compound_geometric,
-            "continuous": self._compound_continuous,
-        }
-
-        return compound[method]
 
     def to_period(self, freq: str, method: str) -> pd.DataFrame:
         """Converts return series to a different (and lower) frequency.
@@ -108,19 +49,14 @@ class ReturnSeries(TimeSeries):
             freq = "B"
 
         try:
-            assert self._freq_compare(freq, self.freq)
+            assert is_lower_freq(freq, self.freq)
         except AssertionError:
             raise ValueError(
                 "Cannot convert to higher frequency. "
                 f"target={freq}, current={self.freq}"
             )
 
-        if method not in ["arithmetic", "geometric", "continuous"]:
-            raise ValueError(
-                "Method should be one of 'geometric', 'arithmetic' or 'continuous'"
-            )
-
-        return self.series.groupby(pd.Grouper(freq=freq)).agg(self._compound(method))
+        return self.series.groupby(pd.Grouper(freq=freq)).agg(compound(method))
 
     def to_week(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to weekly frequency.
@@ -388,7 +324,7 @@ class ReturnSeries(TimeSeries):
         end = []
 
         names.append(self.name)
-        total_return.append(self._compound(method)(self.series.iloc[:, 0]))
+        total_return.append(compound(method)(self.series.iloc[:, 0]))
 
         if meta:
             start.append(self.start)
@@ -403,9 +339,7 @@ class ReturnSeries(TimeSeries):
                     # returns series
                     benchmark = self._normalize_daterange(benchmark)
                     names.append(name)
-                    total_return.append(
-                        self._compound(method)(benchmark.series.iloc[:, 0])
-                    )
+                    total_return.append(compound(method)(benchmark.series.iloc[:, 0]))
 
                     if meta:
                         start.append(benchmark.start)

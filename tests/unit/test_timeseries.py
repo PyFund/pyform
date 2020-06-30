@@ -86,8 +86,8 @@ def test_init_from_excel():
     timeseries objects from excel
     """
 
-    # TODO: update this test once we implement this method
-    TimeSeries.read_excel("tests/unit/data/twitter.xlsx")
+    ts = TimeSeries.read_excel("tests/unit/data/spy.xlsx")
+    assert ts.series.iloc[0, 0] == 86.04
 
 
 def test_init_from_db():
@@ -132,67 +132,3 @@ def test_reset_daterange():
     assert ts.series.index[0] == datetime.datetime.strptime("2013-11-07", "%Y-%m-%d")
     assert ts.end == datetime.datetime.strptime("2020-06-26", "%Y-%m-%d")
     assert ts.series.index[-1] == datetime.datetime.strptime("2020-06-26", "%Y-%m-%d")
-
-
-def test_infer_freq():
-
-    ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
-    assert ts.freq == "B"
-
-    # The following should raise value error, since first 10 are daily, and
-    # last 10 are monthly frequencies
-    df = pd.DataFrame(
-        data={
-            "date": [
-                "2020-01-01",
-                "2020-01-02",
-                "2020-01-03",
-                "2020-01-04",
-                "2020-01-05",
-                "2020-01-06",
-                "2020-01-07",
-                "2020-01-08",
-                "2020-01-09",
-                "2020-01-10",
-                "2020-01-11",
-                "2020-02-01",
-                "2020-03-01",
-                "2020-04-01",
-                "2020-05-01",
-                "2020-06-01",
-                "2020-07-01",
-                "2020-08-01",
-                "2020-09-01",
-                "2020-10-01",
-                "2020-11-01",
-                "2020-12-01",
-            ],
-            "returns": [*range(0, 22)],
-        }
-    )
-    with pytest.raises(ValueError):
-        TimeSeries(df)
-
-    # The following should raise value error, as frequencies are mixed and
-    # cannot be inferred
-    df = pd.DataFrame(
-        data={
-            "date": [
-                "2020-01-01",
-                "2020-01-02",
-                "2020-06-01",
-                "2020-07-01",
-                "2020-08-01",
-                "2020-09-01",
-            ],
-            "returns": [*range(0, 6)],
-        }
-    )
-    with pytest.raises(ValueError):
-        TimeSeries(df)
-
-
-def test_freq_compare():
-
-    assert TimeSeries._freq_compare("W", "D")
-    assert not TimeSeries._freq_compare("D", "W")
