@@ -320,14 +320,14 @@ def test_sharpe_ratio():
     returns = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
 
     # No benchmark
-    sharpe_ratio = returns.get_sharpe_ratio()
+    sharpe_ratio = returns.get_sharpe()
     expected_output = pd.DataFrame(
         data={"name": ["SPY"], "field": "sharpe ratio", "value": [0.5319582050650019]}
     )
     assert sharpe_ratio.equals(expected_output)
 
     # daily
-    sharpe_ratio = returns.get_sharpe_ratio(freq="D", meta=True)
+    sharpe_ratio = returns.get_sharpe(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["SPY"],
@@ -343,7 +343,7 @@ def test_sharpe_ratio():
 
     # use libor for risk free rate
     returns.add_rf(libor1m, "libor")
-    sharpe_ratio = returns.get_sharpe_ratio(freq="D", risk_free="libor", meta=True)
+    sharpe_ratio = returns.get_sharpe(freq="D", risk_free="libor", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["SPY"],
@@ -359,7 +359,7 @@ def test_sharpe_ratio():
 
     # with benchmark
     returns.add_bm(qqq)
-    sharpe_ratio = returns.get_sharpe_ratio(meta=True)
+    sharpe_ratio = returns.get_sharpe(meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["SPY", "QQQ"],
@@ -375,11 +375,11 @@ def test_sharpe_ratio():
 
     # wrong key
     with pytest.raises(ValueError):
-        returns.get_sharpe_ratio(risk_free="not-exist")
+        returns.get_sharpe(risk_free="not-exist")
 
     # wrong type
     with pytest.raises(TypeError):
-        returns.get_sharpe_ratio(risk_free=libor1m)
+        returns.get_sharpe(risk_free=libor1m)
 
 
 def test_libor_fred():

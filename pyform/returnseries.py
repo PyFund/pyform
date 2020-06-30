@@ -524,7 +524,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_sharpe_ratio(
+    def get_sharpe(
         self,
         freq: Optional[str] = "M",
         risk_free: Optional[Union[float, int, str]] = 0,
