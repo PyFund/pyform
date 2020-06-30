@@ -84,3 +84,22 @@ def compound(method: str) -> Callable:
     }
 
     return compound[method]
+
+
+def ret_to_period(df: pd.DataFrame, freq: str, method: str):
+    """Converts return series to a different (and lower) frequency.
+
+    Args:
+        df: a time indexed pandas dataframe
+        freq: frequency to convert the return series to.
+            Available options can be found `here <https://tinyurl.com/t78g6bh>`_.
+        method: compounding method when converting to lower frequency.
+
+            * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
+            * 'arithmetic': arithmetic compounding ``r1 + r2``
+            * 'continuous': continous compounding ``exp(r1+r2) - 1``
+
+    Returns:
+        pd.DataFrame: return series in desired frequency
+    """
+    return df.groupby(pd.Grouper(freq=freq)).agg(compound(method))

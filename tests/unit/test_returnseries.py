@@ -21,10 +21,7 @@ def test_to_period():
     assert returns.to_month().iloc[1, 0] == 0.5311520760874386
     assert returns.to_quarter().iloc[1, 0] == -0.2667730077753935
     assert returns.to_year().iloc[1, 0] == -0.4364528678695403
-    assert returns.to_week("arithmetic").iloc[1, 0] == 0.05658200000000001
-    assert returns.to_week("continuous").iloc[1, 0] == 0.05821338474015869
-    with pytest.raises(ValueError):
-        returns.to_period("W", "contnuuous")  # typo in continuous should cause failure
+
     with pytest.raises(ValueError):
         returns.to_period("H", "geometric")  # converting data to higher frequency
 

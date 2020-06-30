@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
-from pyform.timeseries import TimeSeries
 from pyform.util.freq import is_lower_freq, infer_freq
+from pyform.util.dataframe import set_col_as_datetime_index
 
 
 def test_freq_compare():
@@ -13,8 +13,8 @@ def test_freq_compare():
 
 def test_infer_freq():
 
-    ts = TimeSeries.read_csv("tests/unit/data/twitter.csv")
-    assert infer_freq(ts) == "B"
+    ts = pd.read_csv("tests/unit/data/twitter.csv")
+    assert infer_freq(set_col_as_datetime_index(ts, "date")) == "B"
 
     # The following should raise value error, since first 10 are daily, and
     # last 10 are monthly frequencies
@@ -48,7 +48,7 @@ def test_infer_freq():
         }
     )
     with pytest.raises(ValueError):
-        infer_freq(TimeSeries(df))
+        infer_freq(set_col_as_datetime_index(df, "date"))
 
     # The following should raise value error, as frequencies are mixed and
     # cannot be inferred
@@ -66,4 +66,4 @@ def test_infer_freq():
         }
     )
     with pytest.raises(ValueError):
-        infer_freq(TimeSeries(df))
+        infer_freq(set_col_as_datetime_index(df, "date"))

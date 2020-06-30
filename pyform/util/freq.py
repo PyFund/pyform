@@ -1,3 +1,4 @@
+import pandas as pd
 from typing import Optional
 
 
@@ -20,11 +21,11 @@ def is_lower_freq(freq1: str, freq2: str) -> bool:
     return freq[freq1] >= freq[freq2]
 
 
-def infer_freq(series, use: Optional[int] = 50) -> str:
+def infer_freq(series: pd.DataFrame, use: Optional[int] = 50) -> str:
     """Infer the frequency of the time series
 
     Args:
-        series: a pyform timeseries object
+        series: a pandas DataFrame with datetime index
         use: number of data points to use from the head and tail of the time series
             index in order to determin frequency. This should be at least 10. Defaults
             to 50.
@@ -38,17 +39,17 @@ def infer_freq(series, use: Optional[int] = 50) -> str:
     """
 
     freq = set()
-    max_check = min(len(series.series.index) - 10, use)
+    max_check = min(len(series.index) - 10, use)
 
     if max_check <= 10:
-        inferred_freq = series.series.index.inferred_freq
+        inferred_freq = series.index.inferred_freq
         if inferred_freq is not None:
             freq.add(inferred_freq)
     else:
         # check head
         for i in range(0, max_check, 10):
 
-            inferred_freq = series.series.index[i : (i + 10)].inferred_freq
+            inferred_freq = series.index[i : (i + 10)].inferred_freq
 
             if inferred_freq is not None:
 
@@ -57,7 +58,7 @@ def infer_freq(series, use: Optional[int] = 50) -> str:
         # check from tail
         for i in range(0, -max_check, -10):
 
-            inferred_freq = series.series.index[(i - 11) : (i - 1)].inferred_freq
+            inferred_freq = series.index[(i - 11) : (i - 1)].inferred_freq
 
             if inferred_freq is not None:
 

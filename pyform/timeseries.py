@@ -9,9 +9,10 @@ from pyform.util.freq import infer_freq
 
 
 class TimeSeries:
-    """TimeSeries is a representation of a form of data that changes with
-       time. For a timeseries object, time index should be unique, meaning
-       it would only accept a "wide" dataframe and not a "long" dataframe.
+    """TimeSeries is a representation of a form of data that changes with time.
+
+    For a timeseries object, time index should be unique, meaning it would only
+    accept a "wide" dataframe and not a "long" dataframe.
 
        Args:
            df: a dataframe with datetime index, or a 'date'/'datetime' column
@@ -35,11 +36,11 @@ class TimeSeries:
         self.end = max(self.series.index)
 
         # frequency of the series
-        self.freq = infer_freq(self)
+        self.freq = infer_freq(self.series)
 
     @classmethod
     def read_csv(cls, path: str):
-        """Create a time series object from a csv file
+        """Creates a time series object from a csv file
 
         Args:
             path: path to the csv file
@@ -53,7 +54,7 @@ class TimeSeries:
 
     @classmethod
     def read_excel(cls, path: str, sheet_name: Union[str, int] = 0):
-        """Create a time series object from a Excel file
+        """Creates a time series object from a Excel file
 
         Note:
             using this method requires additional dependency openpyxl
@@ -75,9 +76,10 @@ class TimeSeries:
         return NotImplemented
 
     def _validate_input(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Validates the DataFrame is a time indexed pandas dataframe,
-        or it has one column named as "date" or "datetime".
+        """Validates the DataFrame's format.
 
+        The dataframe should be a time indexed pandas dataframe,
+        or it has one column named as "date" or "datetime".
 
         Args:
             df: a time indexed pandas dataframe, or a pandas dataframe
@@ -148,7 +150,7 @@ class TimeSeries:
         self.end = max(self.series.index)
 
     def reset(self):
-        """Reset data to its initial state
+        """Resets TimeSeries to its initial state
         """
 
         self.series = self._series.copy()

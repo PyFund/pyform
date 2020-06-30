@@ -7,13 +7,12 @@ import math
 import pandas as pd
 from typing import Optional, Union
 from pyform.timeseries import TimeSeries
-from pyform.returns.compound import compound
+from pyform.returns.compound import compound, ret_to_period
 from pyform.util.freq import is_lower_freq
 
 
 class ReturnSeries(TimeSeries):
-    """A return series. It should be datetime indexed and
-       has one column of returns data.
+    """A return series that's datetime indexed and has one column of returns data
     """
 
     def __init__(self, series, name: Optional[str] = None):
@@ -44,10 +43,12 @@ class ReturnSeries(TimeSeries):
             pd.DataFrame: return series in desired frequency
         """
 
+        # Use businessness days for all return series
         if freq == "D":
-            # Use businessness days for all return series
             freq = "B"
 
+        # make sure it's not converting to a higher frequency
+        # e.g. trying to convert a monthly series into daily
         try:
             assert is_lower_freq(freq, self.freq)
         except AssertionError:
@@ -56,17 +57,13 @@ class ReturnSeries(TimeSeries):
                 f"target={freq}, current={self.freq}"
             )
 
-        return self.series.groupby(pd.Grouper(freq=freq)).agg(compound(method))
+        return ret_to_period(self.series, freq, method)
 
     def to_week(self, method: Optional[str] = "geometric") -> pd.DataFrame:
         """Converts return series to weekly frequency.
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
-                * 'arithmetic': arithmetic compounding ``r1 + r2``
-                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in weekly frequency
@@ -80,10 +77,6 @@ class ReturnSeries(TimeSeries):
         Args:
             method: compounding method. Defaults to "geometric".
 
-                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
-                * 'arithmetic': arithmetic compounding ``r1 + r2``
-                * 'continuous': continous compounding ``exp(r1+r2) - 1``
-
         Returns:
             pd.DataFrame: return series, in monthly frequency
         """
@@ -96,10 +89,6 @@ class ReturnSeries(TimeSeries):
         Args:
             method: compounding method. Defaults to "geometric".
 
-                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
-                * 'arithmetic': arithmetic compounding ``r1 + r2``
-                * 'continuous': continous compounding ``exp(r1+r2) - 1``
-
         Returns:
             pd.DataFrame: return series, in quarterly frequency
         """
@@ -111,10 +100,6 @@ class ReturnSeries(TimeSeries):
 
         Args:
             method: compounding method. Defaults to "geometric".
-
-                * 'geometric': geometric compounding ``(1+r1) * (1+r2) - 1``
-                * 'arithmetic': arithmetic compounding ``r1 + r2``
-                * 'continuous': continous compounding ``exp(r1+r2) - 1``
 
         Returns:
             pd.DataFrame: return series, in annual frequency
@@ -130,12 +115,13 @@ class ReturnSeries(TimeSeries):
         return series
 
     def add_benchmark(self, benchmark: "ReturnSeries", name: Optional[str] = None):
-        """Add a benchmark for the return series. A benchmark is useful and needed
-           in order to calculate:
+        """Adds a benchmark for the return series.
 
-                * 'correlation': is the correlation between the return series and
-                    the benchmark
-                * 'beta': is the CAPM beta between the return series and the benchmark
+        A benchmark is useful and needed in order to calculate:
+
+            * 'correlation': is the correlation between the return series and
+                the benchmark
+            * 'beta': is the CAPM beta between the return series and the benchmark
 
         Args:
             benchmark: A benchmark. Should be a ReturnSeries object.
@@ -150,11 +136,11 @@ class ReturnSeries(TimeSeries):
         self.benchmark[name] = copy.deepcopy(benchmark)
 
     def add_risk_free(self, risk_free: "ReturnSeries", name: Optional[str] = None):
-        """Add a risk free rate for the return series. A benchmark is useful and needed
-           in order to calculate:
+        """Adds a risk free rate for the return series.
 
-                * 'sharpe ratio'
+        A risk free rate is useful and needed in order to calculate:
 
+            * 'sharpe ratio'
 
         Args:
             risk_free: A risk free rate. Should be a ReturnSeries object.
@@ -292,7 +278,7 @@ class ReturnSeries(TimeSeries):
         method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
     ) -> pd.DataFrame:
-        """Compute total return of the series
+        """Computes total return of the series
 
         Args:
             include_bm: whether to compute total return for benchmarks as well.
@@ -377,7 +363,7 @@ class ReturnSeries(TimeSeries):
         include_bm: Optional[bool] = True,
         meta: Optional[bool] = False,
     ):
-        """Compute annualized return of the series
+        """Computes annualized return of the series
 
         Args:
             method: method to use when compounding return. Defaults to "geometric".
@@ -432,7 +418,7 @@ class ReturnSeries(TimeSeries):
         compound_method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
     ) -> pd.DataFrame:
-        """Compute annualized volatility of the series
+        """Computes annualized volatility of the series
 
         Args:
             freq: Returns are converted to the same frequency before volatility
@@ -552,7 +538,7 @@ class ReturnSeries(TimeSeries):
         compound_method: Optional[str] = "geometric",
         meta: Optional[bool] = False,
     ) -> pd.DataFrame:
-        """Compute Sharpe ratio of the series
+        """Computes Sharpe ratio of the series
 
         Args:
             freq: Returns are converted to the same frequency before Sharpe ratio
@@ -722,7 +708,7 @@ class CashSeries(ReturnSeries):
         start: Optional[str] = "1980-01-01",
         end: Optional[str] = "2029-12-31",
     ):
-        """Create a constant cash daily returns stream
+        """Creates a constant cash daily returns stream
 
         Args:
             annualized_return: Annualized return of the cash, in decimals.
@@ -752,7 +738,7 @@ class CashSeries(ReturnSeries):
 
     @classmethod
     def read_fred_libor_1m(cls):
-        """Create one month libor daily returns from fred data
+        """Creates one month libor daily returns from fred data
 
         Returns:
             pyform.CashSeries: one month libor daily returns
