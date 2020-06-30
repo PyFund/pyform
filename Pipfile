@@ -14,6 +14,7 @@ twine = "*"
 coverage = "*"
 pytest-cov = "*"
 pyform = {editable = true, path = "."}
+openpyxl = "*"
 
 [packages]
 pandas = "*"
