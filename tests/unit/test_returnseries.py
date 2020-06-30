@@ -72,7 +72,7 @@ def test_corr():
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
             "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
             "total": 80,
-            "skipped": 0,
+            "used": 80,
         }
     )
     assert corr.equals(expected_output)
@@ -160,7 +160,7 @@ def test_annualized_return():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    ann_return = returns.get_annualized_return()
+    ann_return = returns.get_ann_return()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -170,7 +170,7 @@ def test_annualized_return():
     )
     assert ann_return.equals(expected_output)
 
-    ann_return = returns.get_annualized_return(method="arithmetic", meta=True)
+    ann_return = returns.get_ann_return(method="arithmetic", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -183,7 +183,7 @@ def test_annualized_return():
     )
     assert ann_return.equals(expected_output)
 
-    ann_return = returns.get_annualized_return(method="continuous")
+    ann_return = returns.get_ann_return(method="continuous")
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -195,7 +195,7 @@ def test_annualized_return():
 
     # with single benchmark
     returns.add_benchmark(spy)
-    ann_return = returns.get_annualized_return()
+    ann_return = returns.get_ann_return()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -206,7 +206,7 @@ def test_annualized_return():
     assert ann_return.equals(expected_output)
 
     # meta=True
-    ann_return = returns.get_annualized_return(meta=True)
+    ann_return = returns.get_ann_return(meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -220,7 +220,7 @@ def test_annualized_return():
     assert ann_return.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    ann_return = returns.get_annualized_return(include_bm=False)
+    ann_return = returns.get_ann_return(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -236,7 +236,7 @@ def test_annualized_volatility():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    ann_vol = returns.get_annualized_volatility()
+    ann_vol = returns.get_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -247,7 +247,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.get_annualized_volatility(freq="D", meta=True)
+    ann_vol = returns.get_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -262,7 +262,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # population standard deviation
-    ann_vol = returns.get_annualized_volatility(method="population", meta=True)
+    ann_vol = returns.get_ann_vol(method="population", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -278,7 +278,7 @@ def test_annualized_volatility():
 
     # with single benchmark
     returns.add_benchmark(spy)
-    ann_vol = returns.get_annualized_volatility()
+    ann_vol = returns.get_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -289,7 +289,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.get_annualized_volatility(freq="D", meta=True)
+    ann_vol = returns.get_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -304,7 +304,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    ann_vol = returns.get_annualized_volatility(include_bm=False)
+    ann_vol = returns.get_ann_vol(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -348,7 +348,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY"],
             "field": "sharpe ratio",
-            "value": [0.31751335834676475],
+            "value": [0.31754764636606325],
             "freq": "D",
             "risk_free": "LIBOR_1M: 1.54%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),

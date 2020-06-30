@@ -149,6 +149,15 @@ class TimeSeries:
         self.start = min(self.series.index)
         self.end = max(self.series.index)
 
+    def align_daterange(self, series: "TimeSeries"):
+        """Aligns daterange of the incoming series with the main series
+
+        Args:
+            series: series' to align daterange for
+        """
+
+        series.set_daterange(start=self.start, end=self.end)
+
     def reset(self):
         """Resets TimeSeries to its initial state
         """

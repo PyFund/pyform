@@ -107,13 +107,6 @@ class ReturnSeries(TimeSeries):
 
         return self.to_period("Y", method)
 
-    def _normalize_daterange(self, series: "ReturnSeries"):
-
-        series = copy.deepcopy(series)
-        series.set_daterange(start=self.start, end=self.end)
-
-        return series
-
     def add_benchmark(self, benchmark: "ReturnSeries", name: Optional[str] = None):
         """Adds a benchmark for the return series.
 
@@ -203,22 +196,22 @@ class ReturnSeries(TimeSeries):
         if not len(self.benchmark) > 0:
             raise ValueError("Correlation needs at least one benchmark.")
 
-        ret = self.to_period(freq=freq, method=compound_method)
-        n_ret = len(ret.index)
-
         # Columns in the returned dataframe
-        bm_names = []
-        corr = []
-        start = []
-        end = []
-        skipped = []
+        names, corr, start, end, used = ([] for i in range(5))
+
+        # Convert return
+        ret = self.to_period(freq=freq, method=compound_method)
 
         for name, benchmark in self.benchmark.items():
 
             try:
 
-                # Modify benchmark so it's in the same timerange as the returns series
-                benchmark = self._normalize_daterange(benchmark)
+                # keep record of start and so they can be reset later
+                bm_start = benchmark.start
+                bm_end = benchmark.end
+
+                # modify benchmark so it's in the same timerange as the returns series
+                self.align_daterange(benchmark)
 
                 # Convert benchmark to desired frequency
                 # note this is done after it's time range has been normalized
@@ -233,15 +226,15 @@ class ReturnSeries(TimeSeries):
                 corr.append(df.corr(method).iloc[0, 1])
 
                 # Add benchmark to list of benchmark names
-                bm_names.append(name)
+                names.append(name)
 
                 if meta:
-                    # Add start and end date used to compute correlation
-                    start.append(benchmark.start)
-                    end.append(benchmark.end)
+                    start.append(benchmark.start)  # start date of data used
+                    end.append(benchmark.end)  # end date of data used
+                    used.append(len(df.index))  # number of rows used in calculation
 
-                    # Add number of rows skipped in calculation
-                    skipped.append(n_ret - len(df.index))
+                # Reset bm daterange
+                benchmark.set_daterange(bm_start, bm_end)
 
             except Exception as e:  # pragma: no cover
 
@@ -252,22 +245,22 @@ class ReturnSeries(TimeSeries):
 
             result = pd.DataFrame(
                 data={
-                    "name": bm_names,
+                    "name": names,
                     "field": "correlation",
                     "value": corr,
                     "freq": freq,
                     "method": method,
                     "start": start,
                     "end": end,
-                    "total": n_ret,
-                    "skipped": skipped,
+                    "total": len(ret.index),
+                    "used": used,
                 }
             )
 
         else:
 
             result = pd.DataFrame(
-                data={"name": bm_names, "field": "correlation", "value": corr}
+                data={"name": names, "field": "correlation", "value": corr}
             )
 
         return result
@@ -304,37 +297,40 @@ class ReturnSeries(TimeSeries):
         """
 
         # Columns in the returned dataframe
-        names = []
-        total_return = []
-        start = []
-        end = []
+        names, total_return, start, end = ([] for i in range(4))
 
-        names.append(self.name)
-        total_return.append(compound(method)(self.series.iloc[:, 0]))
-
-        if meta:
-            start.append(self.start)
-            end.append(self.end)
+        run_name = [self.name]
+        run_data = [self]
 
         if include_bm:
-            for name, benchmark in self.benchmark.items():
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
 
-                try:
+        for name, series in zip(run_name, run_data):
 
-                    # Modify benchmark so it's in the same timerange as the
-                    # returns series
-                    benchmark = self._normalize_daterange(benchmark)
-                    names.append(name)
-                    total_return.append(compound(method)(benchmark.series.iloc[:, 0]))
+            try:
 
-                    if meta:
-                        start.append(benchmark.start)
-                        end.append(benchmark.end)
+                # keep record of start and so they can be reset later
+                series_start = series.start
+                series_end = series.end
 
-                except Exception as e:  # pragma: no cover
+                # modify series so it's in the same timerange as the main series
+                self.align_daterange(series)
+                tot_ret = compound(method)(series.series.iloc[:, 0])
 
-                    log.error(f"Cannot compute total return: benchmark={name}: {e}")
-                    pass
+                names.append(name)
+                total_return.append(tot_ret)
+
+                if meta:
+                    start.append(series.start)
+                    end.append(series.end)
+
+                series.set_daterange(series_start, series_end)
+
+            except Exception as e:  # pragma: no cover
+
+                log.error(f"Cannot compute total return: name={name}: {e}")
+                pass
 
         if meta:
 
@@ -357,7 +353,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_annualized_return(
+    def get_ann_return(
         self,
         method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
@@ -389,7 +385,6 @@ class ReturnSeries(TimeSeries):
         """
 
         result = self.get_total_return(method=method, include_bm=include_bm, meta=True)
-        result["field"] = "annualized return"
 
         # find number of days
         one_day = pd.to_timedelta(1, unit="D")
@@ -403,6 +398,8 @@ class ReturnSeries(TimeSeries):
         elif method == "continuous":
             result["value"] = (result["value"] + 1).apply(math.log) * (1 / years)
 
+        result["field"] = "annualized return"
+
         if meta:
             result = result[["name", "field", "value", "method", "start", "end"]]
         else:
@@ -410,7 +407,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_annualized_volatility(
+    def get_ann_vol(
         self,
         freq: Optional[str] = "M",
         include_bm: Optional[bool] = True,
@@ -449,64 +446,61 @@ class ReturnSeries(TimeSeries):
             meta is set to True.
         """
 
+        # Columns in the returned dataframe
+        names, ann_vol, start, end = ([] for i in range(4))
+
         # delta degrees of freedom, used for calculate standard deviation
         ddof = {"sample": 1, "population": 0}[method]
 
-        # Columns in the returned dataframe
-        names = []
-        ann_vol = []
-        start = []
-        end = []
-
-        # Convert series to the desired frequency
-        ret = self.to_period(freq=freq, method=compound_method)
-
-        # To annualize, after changing the frequency, see how many
-        # periods there are in a year
+        # datetime representation of number of days in 1 year
         one_year = pd.to_timedelta(365.25, unit="D")
-        years = (self.end - self.start) / one_year
-        sample_per_year = len(ret.index) / years
 
-        vol = ret.iloc[:, 0].std(ddof=ddof)
-        vol *= math.sqrt(sample_per_year)
-
-        names.append(ret.columns[0])
-        ann_vol.append(vol)
-
-        if meta:
-            start.append(self.start)
-            end.append(self.end)
+        run_name = [self.name]
+        run_data = [self]
 
         if include_bm:
-            for name, benchmark in self.benchmark.items():
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
 
-                try:
+        for name, series in zip(run_name, run_data):
 
-                    # Modify benchmark so it's in the same timerange as the
-                    # returns series
-                    benchmark = self._normalize_daterange(benchmark)
-                    bm = benchmark.to_period(freq=freq, method=compound_method)
+            try:
 
-                    years = (benchmark.end - benchmark.start) / one_year
-                    sample_per_year = len(bm.index) / years
+                # keep record of start and so they can be reset later
+                series_start = series.start
+                series_end = series.end
 
-                    vol = bm.iloc[:, 0].std(ddof=ddof)
-                    vol *= math.sqrt(sample_per_year)
+                # modify series so it's in the same timerange as the main series
+                self.align_daterange(series)
 
-                    names.append(name)
-                    ann_vol.append(vol)
+                # Convert return to desired frequency
+                ret = series.to_period(freq=freq, method=compound_method)
 
-                    if meta:
-                        start.append(benchmark.start)
-                        end.append(benchmark.end)
+                # Compute the duration of the series in terms of number of years
+                years = (series.end - series.start) / one_year
 
-                except Exception as e:  # pragma: no cover
+                # Get number of data points per year
+                sample_per_year = len(ret.index) / years
 
-                    log.error(
-                        "Cannot compute annualized volatility: "
-                        f"benchmark={name}: {e}"
-                    )
-                    pass
+                # Compute per period standard deviation
+                vol = ret.iloc[:, 0].std(ddof=ddof)
+
+                # Annualize to annual volatility
+                vol *= math.sqrt(sample_per_year)
+
+                names.append(name)
+                ann_vol.append(vol)
+
+                if meta:
+                    start.append(series.start)
+                    end.append(series.end)
+
+                series.set_daterange(series_start, series_end)
+
+            except Exception as e:  # pragma: no cover
+
+                log.error(f"Cannot compute annualized volatility: name={name}: {e}")
+                pass
 
         if meta:
 
@@ -580,102 +574,83 @@ class ReturnSeries(TimeSeries):
             except KeyError:
                 raise ValueError(f"Risk free rate is not set: risk_free={risk_free}")
         elif isinstance(risk_free, float) or isinstance(risk_free, int):
-            rf = CashSeries.constant(risk_free, self.start, self.end)
+            try:
+                rf = self.risk_free[f"cash_{risk_free}"]
+            except KeyError:
+                rf = CashSeries.constant(risk_free, self.start, self.end)
+                self.add_risk_free(rf, f"cash_{risk_free}")
         else:
             raise TypeError(
-                "Risk free should be str, float, or int." f"received={type(risk_free)}"
+                "Risk free should be str, float, or 0." f"received={type(risk_free)}"
             )
 
         # create sharpe for main series
-        names = []
-        sharpe = []
-        start = []
-        end = []
-        risk_free = []
+        names, sharpe, start, end, risk_free = ([] for i in range(5))
 
+        # get column name of risk free rate
         rf_name = rf.series.columns[0]
 
-        # Make sure the start date is the max of start date of rf and returns,
-        # and end date is the min of end date of rf and returns
-        start_date = max(rf.start, self.start)
-        end_date = min(rf.end, self.end)
-
-        rf_use = copy.deepcopy(rf)
-        ret_use = copy.deepcopy(self)
-        rf_use.set_daterange(start_date, end_date)
-        ret_use.set_daterange(start_date, end_date)
-        series_name = ret_use.series.columns[0]
-
-        # compute excess return over rf rate
-        df = ret_use.series.merge(
-            rf_use.series, on="datetime", how="outer", sort=True
-        ).fillna(0)
-        df[series_name] -= df[rf_name]
-        df = df.drop(rf_name, axis="columns")
-
-        series = ReturnSeries(df)
-        ann_ret = series.get_annualized_return(method=compound_method)["value"][0]
-        ann_vol = series.get_annualized_volatility(
-            freq=freq, compound_method=compound_method
-        )["value"][0]
-        ratio = ann_ret / ann_vol
-
-        names.append(self.name)
-        sharpe.append(ratio)
-
-        if meta:
-            rf_ann = rf_use.get_annualized_return(method=compound_method)["value"][0]
-            rf_ann = f"{round(rf_ann*100, 2)}%"
-            start.append(series.start)
-            end.append(series.end)
-            risk_free.append(f"{rf_name}: {rf_ann}")
+        run_name = [self.name]
+        run_data = [self]
 
         if include_bm:
-            for name, benchmark in self.benchmark.items():
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
 
-                try:
+        for name, series in zip(run_name, run_data):
 
-                    rf_use = copy.deepcopy(rf)
-                    benchmark = self._normalize_daterange(benchmark)
+            try:
 
-                    start_date = max(rf.start, benchmark.start)
-                    end_date = min(rf.end, benchmark.end)
+                # keep record of start and so they can be reset later
+                series_start = series.start
+                series_end = series.end
 
-                    rf_use.set_daterange(start_date, end_date)
-                    benchmark.set_daterange(start_date, end_date)
-                    bm_name = benchmark.series.columns[0]
+                # modify series so it's in the same timerange as the main series
+                self.align_daterange(series)
 
-                    df = benchmark.series.merge(
-                        rf_use.series, on="datetime", how="outer", sort=True
-                    ).fillna(0)
-                    df[bm_name] -= df[rf_name]
-                    df = df.drop(rf_name, axis="columns")
+                # get name of the series
+                name = series.series.columns[0]
 
-                    series = ReturnSeries(df)
-                    ann_ret = series.get_annualized_return(method=compound_method)[
-                        "value"
-                    ][0]
-                    ann_vol = series.get_annualized_volatility(
-                        freq=freq, compound_method=compound_method
+                # use the narrowest date range between series and risk free rate
+                start_date = max(rf.start, series.start)
+                end_date = min(rf.end, series.end)
+                rf.set_daterange(start_date, end_date)
+                series.set_daterange(start_date, end_date)
+
+                df = series.series.merge(
+                    rf.series, on="datetime", how="outer", sort=True
+                ).fillna(0)
+                df[name] -= df[rf_name]
+                df = df.drop(rf_name, axis="columns")
+
+                exccess_series = ReturnSeries(df)
+                ann_excess_ret = exccess_series.get_ann_return(
+                    method=compound_method, include_bm=False
+                )["value"][0]
+                ann_series_vol = series.get_ann_vol(
+                    freq=freq, compound_method=compound_method, include_bm=False
+                )["value"][0]
+                ratio = ann_excess_ret / ann_series_vol
+
+                names.append(name)
+                sharpe.append(ratio)
+
+                if meta:
+                    rf_ann = rf.get_ann_return(
+                        method=compound_method, include_bm=False
                     )["value"][0]
-                    ratio = ann_ret / ann_vol
+                    rf_ann = f"{round(rf_ann*100, 2)}%"
+                    risk_free.append(f"{rf_name}: {rf_ann}")
+                    start.append(series.start)
+                    end.append(series.end)
 
-                    names.append(name)
-                    sharpe.append(ratio)
+                series.set_daterange(series_start, series_end)
+                rf.reset()
 
-                    if meta:
-                        rf_ann = rf_use.get_annualized_return(method=compound_method)[
-                            "value"
-                        ][0]
-                        rf_ann = f"{round(rf_ann*100, 2)}%"
-                        start.append(series.start)
-                        end.append(series.end)
-                        risk_free.append(f"{rf_name}: {rf_ann}")
+            except Exception as e:  # pragma: no cover
 
-                except Exception as e:  # pragma: no cover
-
-                    log.error("Cannot compute sharpe ratio: " f"benchmark={name}: {e}")
-                    pass
+                log.error("Cannot compute sharpe ratio: " f"benchmark={name}: {e}")
+                pass
 
         if meta:
 
