@@ -107,7 +107,7 @@ class ReturnSeries(TimeSeries):
 
         return self.to_period("Y", method)
 
-    def add_benchmark(self, benchmark: "ReturnSeries", name: Optional[str] = None):
+    def add_bm(self, benchmark: "ReturnSeries", name: Optional[str] = None):
         """Adds a benchmark for the return series.
 
         A benchmark is useful and needed in order to calculate:
@@ -128,7 +128,7 @@ class ReturnSeries(TimeSeries):
         log.info(f"Adding benchmark. name={name}")
         self.benchmark[name] = copy.deepcopy(benchmark)
 
-    def add_risk_free(self, risk_free: "ReturnSeries", name: Optional[str] = None):
+    def add_rf(self, risk_free: "ReturnSeries", name: Optional[str] = None):
         """Adds a risk free rate for the return series.
 
         A risk free rate is useful and needed in order to calculate:
@@ -265,7 +265,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_total_return(
+    def get_tot_ret(
         self,
         include_bm: Optional[bool] = True,
         method: Optional[str] = "geometric",
@@ -353,7 +353,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_ann_return(
+    def get_ann_ret(
         self,
         method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
@@ -384,7 +384,7 @@ class ReturnSeries(TimeSeries):
             meta is set to True.
         """
 
-        result = self.get_total_return(method=method, include_bm=include_bm, meta=True)
+        result = self.get_tot_ret(method=method, include_bm=include_bm, meta=True)
 
         # find number of days
         one_day = pd.to_timedelta(1, unit="D")
@@ -542,7 +542,7 @@ class ReturnSeries(TimeSeries):
                 in decimals. i.e. 1% annual cash return will be entered as
                 ``annualized_return=0.01``. If is string, look for the corresponding
                 DataFrame of risk free rate in ``self.risk_free``. ``self.risk_free``
-                can be set via the ``add_risk_free()`` class method. Defaults to 0.
+                can be set via the ``add_rf()`` class method. Defaults to 0.
             include_bm: whether to compute Sharpe ratio for benchmarks as well.
                 Defaults to True.
             compound_method: method to use when compounding return.
@@ -578,7 +578,7 @@ class ReturnSeries(TimeSeries):
                 rf = self.risk_free[f"cash_{risk_free}"]
             except KeyError:
                 rf = CashSeries.constant(risk_free, self.start, self.end)
-                self.add_risk_free(rf, f"cash_{risk_free}")
+                self.add_rf(rf, f"cash_{risk_free}")
         else:
             raise TypeError(
                 "Risk free should be str, float, or 0." f"received={type(risk_free)}"
@@ -624,7 +624,7 @@ class ReturnSeries(TimeSeries):
                 df = df.drop(rf_name, axis="columns")
 
                 exccess_series = ReturnSeries(df)
-                ann_excess_ret = exccess_series.get_ann_return(
+                ann_excess_ret = exccess_series.get_ann_ret(
                     method=compound_method, include_bm=False
                 )["value"][0]
                 ann_series_vol = series.get_ann_vol(
@@ -636,9 +636,9 @@ class ReturnSeries(TimeSeries):
                 sharpe.append(ratio)
 
                 if meta:
-                    rf_ann = rf.get_ann_return(
-                        method=compound_method, include_bm=False
-                    )["value"][0]
+                    rf_ann = rf.get_ann_ret(method=compound_method, include_bm=False)[
+                        "value"
+                    ][0]
                     rf_ann = f"{round(rf_ann*100, 2)}%"
                     risk_free.append(f"{rf_name}: {rf_ann}")
                     start.append(series.start)
@@ -673,6 +673,15 @@ class ReturnSeries(TimeSeries):
             )
 
         return result
+
+    def get_rolling_ann_ret(
+        freq: Optional[str] = "M",
+        n: Optional[int] = 36,
+        method: Optional[str] = "geometric",
+        include_bm: Optional[bool] = True,
+    ):
+
+        return NotImplemented
 
 
 class CashSeries(ReturnSeries):

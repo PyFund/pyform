@@ -26,21 +26,21 @@ def test_to_period():
         returns.to_period("H", "geometric")  # converting data to higher frequency
 
 
-def test_add_benchmark():
+def test_add_bm():
 
-    returns.add_benchmark(spy, "S&P 500")
+    returns.add_bm(spy, "S&P 500")
     assert "S&P 500" in returns.benchmark
 
-    returns.add_benchmark(qqq)
+    returns.add_bm(qqq)
     assert "QQQ" in returns.benchmark
 
 
-def test_add_risk_free():
+def test_add_rf():
 
-    returns.add_risk_free(libor1m, "libor")
+    returns.add_rf(libor1m, "libor")
     assert "libor" in returns.risk_free
 
-    returns.add_risk_free(libor1m)
+    returns.add_rf(libor1m)
     assert "LIBOR_1M" in returns.risk_free
 
 
@@ -53,7 +53,7 @@ def test_corr():
         returns.get_corr()
 
     # with single benchmark
-    returns.add_benchmark(spy)
+    returns.add_bm(spy)
 
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
@@ -78,7 +78,7 @@ def test_corr():
     assert corr.equals(expected_output)
 
     # test multiple benchmarks
-    returns.add_benchmark(qqq)
+    returns.add_bm(qqq)
     corr = returns.get_corr()
     expected_output = pd.DataFrame(
         data={
@@ -95,7 +95,7 @@ def test_total_return():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    total_return = returns.get_total_return()
+    total_return = returns.get_tot_ret()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -106,8 +106,8 @@ def test_total_return():
     assert total_return.equals(expected_output)
 
     # with single benchmark
-    returns.add_benchmark(spy)
-    total_return = returns.get_total_return()
+    returns.add_bm(spy)
+    total_return = returns.get_tot_ret()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -118,7 +118,7 @@ def test_total_return():
     assert total_return.equals(expected_output)
 
     # meta=True
-    total_return = returns.get_total_return(meta=True)
+    total_return = returns.get_tot_ret(meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -132,7 +132,7 @@ def test_total_return():
     assert total_return.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    total_return = returns.get_total_return(include_bm=False)
+    total_return = returns.get_tot_ret(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -143,8 +143,8 @@ def test_total_return():
     assert total_return.equals(expected_output)
 
     # test multiple benchmarks
-    returns.add_benchmark(qqq)
-    total_return = returns.get_total_return()
+    returns.add_bm(qqq)
+    total_return = returns.get_tot_ret()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY", "QQQ"],
@@ -160,7 +160,7 @@ def test_annualized_return():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    ann_return = returns.get_ann_return()
+    ann_return = returns.get_ann_ret()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -170,7 +170,7 @@ def test_annualized_return():
     )
     assert ann_return.equals(expected_output)
 
-    ann_return = returns.get_ann_return(method="arithmetic", meta=True)
+    ann_return = returns.get_ann_ret(method="arithmetic", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -183,7 +183,7 @@ def test_annualized_return():
     )
     assert ann_return.equals(expected_output)
 
-    ann_return = returns.get_ann_return(method="continuous")
+    ann_return = returns.get_ann_ret(method="continuous")
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -194,8 +194,8 @@ def test_annualized_return():
     assert ann_return.equals(expected_output)
 
     # with single benchmark
-    returns.add_benchmark(spy)
-    ann_return = returns.get_ann_return()
+    returns.add_bm(spy)
+    ann_return = returns.get_ann_ret()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -206,7 +206,7 @@ def test_annualized_return():
     assert ann_return.equals(expected_output)
 
     # meta=True
-    ann_return = returns.get_ann_return(meta=True)
+    ann_return = returns.get_ann_ret(meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -220,7 +220,7 @@ def test_annualized_return():
     assert ann_return.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    ann_return = returns.get_ann_return(include_bm=False)
+    ann_return = returns.get_ann_ret(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -277,7 +277,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # with single benchmark
-    returns.add_benchmark(spy)
+    returns.add_bm(spy)
     ann_vol = returns.get_ann_vol()
     expected_output = pd.DataFrame(
         data={
@@ -342,7 +342,7 @@ def test_sharpe_ratio():
     assert sharpe_ratio.equals(expected_output)
 
     # use libor for risk free rate
-    returns.add_risk_free(libor1m, "libor")
+    returns.add_rf(libor1m, "libor")
     sharpe_ratio = returns.get_sharpe_ratio(freq="D", risk_free="libor", meta=True)
     expected_output = pd.DataFrame(
         data={
@@ -358,7 +358,7 @@ def test_sharpe_ratio():
     assert sharpe_ratio.equals(expected_output)
 
     # with benchmark
-    returns.add_benchmark(qqq)
+    returns.add_bm(qqq)
     sharpe_ratio = returns.get_sharpe_ratio(meta=True)
     expected_output = pd.DataFrame(
         data={
