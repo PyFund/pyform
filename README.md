@@ -5,4 +5,4 @@
 [![codecov](https://codecov.io/gh/shawnlinxl/pyform/branch/master/graph/badge.svg)](https://codecov.io/gh/shawnlinxl/pyform)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-An Event-Driven Algorithm Trading framework.
+Object oriented performance analytics in Python.
