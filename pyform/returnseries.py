@@ -617,7 +617,7 @@ class ReturnSeries(TimeSeries):
                 ann_excess_ret = exccess_series.get_ann_ret(
                     method=compound_method, include_bm=False
                 )["value"][0]
-                ann_series_vol = series.calc_ann_vol(
+                ann_series_vol = series.get_ann_vol(
                     freq=freq, compound_method=compound_method, include_bm=False
                 )["value"][0]
                 ratio = ann_excess_ret / ann_series_vol
