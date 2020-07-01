@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 import copy
 import math
 import pandas as pd
-from typing import Optional, Union
+from typing import Optional, Union, Dict
 from pyform.timeseries import TimeSeries
 from pyform.returns.compound import compound, ret_to_period
 from pyform.util.freq import is_lower_freq
@@ -681,9 +681,26 @@ class ReturnSeries(TimeSeries):
         self,
         window: Optional[int] = 36,
         freq: Optional[str] = "M",
-        method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
-    ):
+        method: Optional[str] = "geometric",
+    ) -> Dict[str, pd.DataFrame]:
+        """Computes rolling total return of the series
+
+        Args:
+            window: the rolling window. Defaults to 36.
+            freq: frequency of the series. Defaults to "M".
+            include_bm: whether to compute rolling total return for
+                benchmarks as well. Defaults to True.
+            method: method to use when compounding total return.
+                Defaults to "geometric".
+
+
+        Returns:
+            Dict[pd.DataFrame]: dictionary of rolling total returns
+
+                * key: name of the series
+                * value: rolling total returns, in a datetime indexed pandas dataframe
+        """
 
         # Store result in dictionary
         result = dict()
