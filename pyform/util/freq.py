@@ -71,3 +71,43 @@ def infer_freq(series: pd.DataFrame, use: Optional[int] = 50) -> str:
         raise ValueError(f"Multiple series frequency detected: {freq}")
 
     return freq.pop()
+
+
+def calc_timedelta_in_years(start, end) -> float:
+    """Computes timedelta between start and end, in years
+
+    Args:
+        start: start date
+        end: end date
+
+    Returns:
+        float: time delta in number of years
+    """
+
+    # datetime representation of number of days in 1 year
+    one_year = pd.to_timedelta(365.25, unit="D")
+
+    # Compute the duration of the series in terms of number of years
+    years = (end - start) / one_year
+
+    return years
+
+
+def calc_samples_per_year(num_samples: int, start, end) -> float:
+    """Computes number of data points per year, given time range
+
+    Args:
+        num_samples: total number of samples
+        start: start date of samples
+        end: end date of samples
+
+    Returns:
+        float: average number of samples per year
+    """
+
+    years = calc_timedelta_in_years(start, end)
+
+    # Get number of data points per year
+    samples_per_year = num_samples / years
+
+    return samples_per_year

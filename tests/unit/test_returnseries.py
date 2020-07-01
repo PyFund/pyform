@@ -236,7 +236,7 @@ def test_annualized_volatility():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    ann_vol = returns.get_ann_vol()
+    ann_vol = returns.calc_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -247,7 +247,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.get_ann_vol(freq="D", meta=True)
+    ann_vol = returns.calc_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -262,7 +262,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # population standard deviation
-    ann_vol = returns.get_ann_vol(method="population", meta=True)
+    ann_vol = returns.calc_ann_vol(method="population", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -278,7 +278,7 @@ def test_annualized_volatility():
 
     # with single benchmark
     returns.add_bm(spy)
-    ann_vol = returns.get_ann_vol()
+    ann_vol = returns.calc_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -289,7 +289,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.get_ann_vol(freq="D", meta=True)
+    ann_vol = returns.calc_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -304,7 +304,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    ann_vol = returns.get_ann_vol(include_bm=False)
+    ann_vol = returns.calc_ann_vol(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -406,6 +406,32 @@ def test_rolling_tot_ret():
     assert roll_twtr["TWTR"][0] == -0.6002237318946346
     assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
     assert roll_spy["SPY"][0] == 0.1996927920869329
+
+
+def test_rolling_ann_vol():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    roll_ann_vol = returns.get_rolling_ann_vol()
+    roll_twtr = roll_ann_vol["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == 0.5791236929456373
+
+    # Daily, rolling 252 days
+    roll_ann_vol = returns.get_rolling_ann_vol(window=252, freq="D")
+    roll_twtr = roll_ann_vol["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2014-11-06", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == 0.639203890663799
+
+    returns.add_bm(spy)
+    roll_ann_vol = returns.get_rolling_ann_vol()
+    roll_twtr = roll_ann_vol["TWTR"]
+    roll_spy = roll_ann_vol["SPY"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == 0.5791236929456373
+    assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_spy["SPY"][0] == 0.10935207559750833
 
 
 def test_libor_fred():

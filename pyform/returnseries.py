@@ -8,7 +8,8 @@ import pandas as pd
 from typing import Optional, Union, Dict
 from pyform.timeseries import TimeSeries
 from pyform.returns.compound import compound, ret_to_period
-from pyform.util.freq import is_lower_freq
+from pyform.returns.metrics import calc_ann_vol
+from pyform.util.freq import is_lower_freq, calc_samples_per_year
 
 
 class ReturnSeries(TimeSeries):
@@ -410,7 +411,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_ann_vol(
+    def calc_ann_vol(
         self,
         freq: Optional[str] = "M",
         include_bm: Optional[bool] = True,
@@ -452,12 +453,6 @@ class ReturnSeries(TimeSeries):
         # Columns in the returned dataframe
         names, ann_vol, start, end = ([] for i in range(4))
 
-        # delta degrees of freedom, used for calculate standard deviation
-        ddof = {"sample": 1, "population": 0}[method]
-
-        # datetime representation of number of days in 1 year
-        one_year = pd.to_timedelta(365.25, unit="D")
-
         run_name = [self.name]
         run_data = [self]
 
@@ -478,18 +473,10 @@ class ReturnSeries(TimeSeries):
 
                 # Convert return to desired frequency
                 ret = series.to_period(freq=freq, method=compound_method)
-
-                # Compute the duration of the series in terms of number of years
-                years = (series.end - series.start) / one_year
-
-                # Get number of data points per year
-                sample_per_year = len(ret.index) / years
-
-                # Compute per period standard deviation
-                vol = ret.iloc[:, 0].std(ddof=ddof)
-
-                # Annualize to annual volatility
-                vol *= math.sqrt(sample_per_year)
+                samples_per_year = calc_samples_per_year(
+                    len(ret.index), series.start, series.end
+                )
+                vol = calc_ann_vol(ret, method, samples_per_year)
 
                 names.append(name)
                 ann_vol.append(vol)
@@ -630,7 +617,7 @@ class ReturnSeries(TimeSeries):
                 ann_excess_ret = exccess_series.get_ann_ret(
                     method=compound_method, include_bm=False
                 )["value"][0]
-                ann_series_vol = series.get_ann_vol(
+                ann_series_vol = series.calc_ann_vol(
                     freq=freq, compound_method=compound_method, include_bm=False
                 )["value"][0]
                 ratio = ann_excess_ret / ann_series_vol
@@ -723,8 +710,71 @@ class ReturnSeries(TimeSeries):
             self.align_daterange(series)
 
             # compute rolling total return
-            series_in_freq = series.to_period(freq=freq, method=method)
-            roll_result = series_in_freq.rolling(window).apply(compound(method))
+            ret = series.to_period(freq=freq, method=method)
+            roll_result = ret.rolling(window).apply(compound(method))
+            roll_result = roll_result.dropna()
+
+            # store result in dictionary
+            result[name] = roll_result
+
+            # reset series date range
+            series.set_daterange(series_start, series_end)
+
+        return result
+
+    def get_rolling_ann_vol(
+        self,
+        window: Optional[int] = 36,
+        freq: Optional[str] = "M",
+        method: Optional[str] = "sample",
+        include_bm: Optional[bool] = True,
+        compound_method: Optional[str] = "geometric",
+    ) -> Dict[str, pd.DataFrame]:
+        """Computes rolling volatility (standard deviation) of the series
+
+        Args:
+            window: the rolling window. Defaults to 36.
+            freq: Returns are converted to the same frequency before volatility
+                is compuated. Defaults to "M".
+            method: {'sample', 'population'}. method used to compute volatility
+                (standard deviation). Defaults to "sample".
+            include_bm: whether to compute rolling volatility for
+                benchmarks as well. Defaults to True.
+            compound_method: method to use when compounding return.
+                Defaults to "geometric".
+
+        Returns:
+            Dict[pd.DataFrame]: dictionary of rolling total returns
+
+                * key: name of the series
+                * value: rolling total returns, in a datetime indexed pandas dataframe
+        """
+
+        # Store result in dictionary
+        result = dict()
+
+        # Columns in the returned dataframe
+        run_name = [self.name]
+        run_data = [self]
+
+        if include_bm:
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
+
+        for name, series in zip(run_name, run_data):
+
+            # keep record of start and so they can be reset later
+            series_start = series.start
+            series_end = series.end
+
+            # modify series so it's in the same timerange as the main series
+            self.align_daterange(series)
+
+            # compute rolling total return
+            ret = series.to_period(freq=freq, method=compound_method)
+            roll_result = ret.rolling(window).apply(
+                lambda x: calc_ann_vol(x, method=method)
+            )
             roll_result = roll_result.dropna()
 
             # store result in dictionary
