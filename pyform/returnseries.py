@@ -47,6 +47,9 @@ class ReturnSeries(TimeSeries):
         if freq == "D":
             freq = "B"
 
+        if freq == self.freq:
+            return self.series
+
         # make sure it's not converting to a higher frequency
         # e.g. trying to convert a monthly series into daily
         try:
@@ -689,6 +692,10 @@ class ReturnSeries(TimeSeries):
         run_name = [self.name]
         run_data = [self]
 
+        if include_bm:
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
+
         for name, series in zip(run_name, run_data):
 
             # keep record of start and so they can be reset later
@@ -710,6 +717,7 @@ class ReturnSeries(TimeSeries):
             series.set_daterange(series_start, series_end)
 
         return result
+
 
 class CashSeries(ReturnSeries):
     @classmethod

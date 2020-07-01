@@ -252,7 +252,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR"],
             "field": "annualized volatility",
-            "value": [0.545298443138832],
+            "value": [0.5453033363906205],
             "freq": "D",
             "method": "sample",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
@@ -294,7 +294,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR", "SPY"],
             "field": "annualized volatility",
-            "value": [0.545298443138832, 0.17501475527479404],
+            "value": [0.5453033363906205, 0.17501297679149252],
             "freq": "D",
             "method": "sample",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
@@ -332,7 +332,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY"],
             "field": "sharpe ratio",
-            "value": [0.392952489244965],
+            "value": [0.39295707447678757],
             "freq": "D",
             "risk_free": "cash_0: 0.0%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
@@ -348,7 +348,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY"],
             "field": "sharpe ratio",
-            "value": [0.31754764636606325],
+            "value": [0.31755154920375406],
             "freq": "D",
             "risk_free": "LIBOR_1M: 1.54%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
@@ -380,6 +380,32 @@ def test_sharpe_ratio():
     # wrong type
     with pytest.raises(TypeError):
         returns.get_sharpe(risk_free=libor1m)
+
+
+def test_rolling_tot_ret():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    roll_tot_ret = returns.get_rolling_tot_ret()
+    roll_twtr = roll_tot_ret["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.6002237318946346
+
+    # Daily, rolling 252 days
+    roll_tot_ret = returns.get_rolling_tot_ret(window=252, freq="D")
+    roll_twtr = roll_tot_ret["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2014-11-06", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.09043080731969699
+
+    returns.add_bm(spy)
+    roll_tot_ret = returns.get_rolling_tot_ret()
+    roll_twtr = roll_tot_ret["TWTR"]
+    roll_spy = roll_tot_ret["SPY"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.6002237318946346
+    assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_spy["SPY"][0] == 0.1996927920869329
 
 
 def test_libor_fred():
