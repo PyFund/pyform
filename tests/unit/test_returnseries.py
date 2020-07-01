@@ -236,7 +236,7 @@ def test_annualized_volatility():
     returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 
     # No benchmark
-    ann_vol = returns.calc_ann_vol()
+    ann_vol = returns.get_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -247,7 +247,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.calc_ann_vol(freq="D", meta=True)
+    ann_vol = returns.get_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -262,7 +262,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # population standard deviation
-    ann_vol = returns.calc_ann_vol(method="population", meta=True)
+    ann_vol = returns.get_ann_vol(method="population", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],
@@ -278,7 +278,7 @@ def test_annualized_volatility():
 
     # with single benchmark
     returns.add_bm(spy)
-    ann_vol = returns.calc_ann_vol()
+    ann_vol = returns.get_ann_vol()
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -289,7 +289,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # daily volatility
-    ann_vol = returns.calc_ann_vol(freq="D", meta=True)
+    ann_vol = returns.get_ann_vol(freq="D", meta=True)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR", "SPY"],
@@ -304,7 +304,7 @@ def test_annualized_volatility():
     assert ann_vol.equals(expected_output)
 
     # has benchmark, but include_bm=False
-    ann_vol = returns.calc_ann_vol(include_bm=False)
+    ann_vol = returns.get_ann_vol(include_bm=False)
     expected_output = pd.DataFrame(
         data={
             "name": ["TWTR"],

@@ -411,7 +411,7 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def calc_ann_vol(
+    def get_ann_vol(
         self,
         freq: Optional[str] = "M",
         include_bm: Optional[bool] = True,
