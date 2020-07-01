@@ -674,15 +674,42 @@ class ReturnSeries(TimeSeries):
 
         return result
 
-    def get_rolling_ann_ret(
+    def get_rolling_tot_ret(
+        self,
+        window: Optional[int] = 36,
         freq: Optional[str] = "M",
-        n: Optional[int] = 36,
         method: Optional[str] = "geometric",
         include_bm: Optional[bool] = True,
     ):
 
-        return NotImplemented
+        # Store result in dictionary
+        result = dict()
 
+        # Columns in the returned dataframe
+        run_name = [self.name]
+        run_data = [self]
+
+        for name, series in zip(run_name, run_data):
+
+            # keep record of start and so they can be reset later
+            series_start = series.start
+            series_end = series.end
+
+            # modify series so it's in the same timerange as the main series
+            self.align_daterange(series)
+
+            # compute rolling total return
+            series_in_freq = series.to_period(freq=freq, method=method)
+            roll_result = series_in_freq.rolling(window).apply(compound(method))
+            roll_result = roll_result.dropna()
+
+            # store result in dictionary
+            result[name] = roll_result
+
+            # reset series date range
+            series.set_daterange(series_start, series_end)
+
+        return result
 
 class CashSeries(ReturnSeries):
     @classmethod
