@@ -165,7 +165,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR"],
             "field": "annualized return",
-            "value": [-0.06352921539090761],
+            "value": [-0.06350385733729014],
         }
     )
     assert ann_return.equals(expected_output)
@@ -175,7 +175,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR"],
             "field": "annualized return",
-            "value": [0.08553588206768473],
+            "value": [0.0855005949876238],
             "method": "arithmetic",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
             "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
@@ -188,7 +188,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR"],
             "field": "annualized return",
-            "value": [0.08553588206768473],
+            "value": [0.0855005949876238],
         }
     )
     assert ann_return.equals(expected_output)
@@ -200,7 +200,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR", "SPY"],
             "field": "annualized return",
-            "value": [-0.06352921539090761, 0.08265365923419554],
+            "value": [-0.06350385733729014, 0.08261818990205616],
         }
     )
     assert ann_return.equals(expected_output)
@@ -211,7 +211,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR", "SPY"],
             "field": "annualized return",
-            "value": [-0.06352921539090761, 0.08265365923419554],
+            "value": [-0.06350385733729014, 0.08261818990205616],
             "method": "geometric",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
             "end": datetime.datetime.strptime("2020-06-26", "%Y-%m-%d"),
@@ -225,7 +225,7 @@ def test_annualized_return():
         data={
             "name": ["TWTR"],
             "field": "annualized return",
-            "value": [-0.06352921539090761],
+            "value": [-0.06350385733729014],
         }
     )
     assert ann_return.equals(expected_output)
@@ -241,7 +241,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR"],
             "field": "annualized volatility",
-            "value": [0.5200932110481337],
+            "value": [0.5199859200287252],
         }
     )
     assert ann_vol.equals(expected_output)
@@ -252,7 +252,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR"],
             "field": "annualized volatility",
-            "value": [0.5453033363906205],
+            "value": [0.545190844726424],
             "freq": "D",
             "method": "sample",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
@@ -267,7 +267,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR"],
             "field": "annualized volatility",
-            "value": [0.5168324064202331],
+            "value": [0.5167257880784241],
             "freq": "M",
             "method": "population",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
@@ -283,7 +283,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR", "SPY"],
             "field": "annualized volatility",
-            "value": [0.5200932110481337, 0.13609234804383752],
+            "value": [0.5199859200287252, 0.13606427329407125],
         }
     )
     assert ann_vol.equals(expected_output)
@@ -294,7 +294,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR", "SPY"],
             "field": "annualized volatility",
-            "value": [0.5453033363906205, 0.17501297679149252],
+            "value": [0.545190844726424, 0.17497687303106887],
             "freq": "D",
             "method": "sample",
             "start": datetime.datetime.strptime("2013-11-07", "%Y-%m-%d"),
@@ -309,7 +309,7 @@ def test_annualized_volatility():
         data={
             "name": ["TWTR"],
             "field": "annualized volatility",
-            "value": [0.5200932110481337],
+            "value": [0.5199859200287252],
         }
     )
     assert ann_vol.equals(expected_output)
@@ -322,7 +322,7 @@ def test_sharpe_ratio():
     # No benchmark
     sharpe_ratio = returns.get_sharpe()
     expected_output = pd.DataFrame(
-        data={"name": ["SPY"], "field": "sharpe ratio", "value": [0.5319582050650019]}
+        data={"name": ["SPY"], "field": "sharpe ratio", "value": [0.5319128667616774]}
     )
     assert sharpe_ratio.equals(expected_output)
 
@@ -332,7 +332,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY"],
             "field": "sharpe ratio",
-            "value": [0.39295707447678757],
+            "value": [0.39292358311061165],
             "freq": "D",
             "risk_free": "cash_0: 0.0%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
@@ -348,7 +348,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY"],
             "field": "sharpe ratio",
-            "value": [0.31755154920375406],
+            "value": [0.3175248036195898],
             "freq": "D",
             "risk_free": "LIBOR_1M: 1.54%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
@@ -364,7 +364,7 @@ def test_sharpe_ratio():
         data={
             "name": ["SPY", "QQQ"],
             "field": "sharpe ratio",
-            "value": [0.5319582050650019, 0.8028838684875361],
+            "value": [0.5319128667616774, 0.8028116328839393],
             "freq": "M",
             "risk_free": "cash_0: 0.0%",
             "start": datetime.datetime.strptime("2003-04-01", "%Y-%m-%d"),
@@ -416,22 +416,48 @@ def test_rolling_ann_vol():
     roll_ann_vol = returns.get_rolling_ann_vol()
     roll_twtr = roll_ann_vol["TWTR"]
     assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
-    assert roll_twtr["TWTR"][0] == 0.5791236929456373
+    assert roll_twtr["TWTR"][0] == 0.5725024779205684
 
     # Daily, rolling 252 days
     roll_ann_vol = returns.get_rolling_ann_vol(window=252, freq="D")
     roll_twtr = roll_ann_vol["TWTR"]
     assert roll_twtr.index[0] == datetime.datetime.strptime("2014-11-06", "%Y-%m-%d")
-    assert roll_twtr["TWTR"][0] == 0.639203890663799
+    assert roll_twtr["TWTR"][0] == 0.6376491116934246
 
     returns.add_bm(spy)
     roll_ann_vol = returns.get_rolling_ann_vol()
     roll_twtr = roll_ann_vol["TWTR"]
     roll_spy = roll_ann_vol["SPY"]
     assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
-    assert roll_twtr["TWTR"][0] == 0.5791236929456373
+    assert roll_twtr["TWTR"][0] == 0.5725024779205684
     assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
-    assert roll_spy["SPY"][0] == 0.10935207559750833
+    assert roll_spy["SPY"][0] == 0.10810183559733508
+
+
+def test_rolling_ann_return():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    roll_ann_ret = returns.get_rolling_ann_ret()
+    roll_twtr = roll_ann_ret["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.2633310984499173
+
+    # Daily, rolling 252 days
+    roll_ann_ret = returns.get_rolling_ann_ret(window=252, freq="D")
+    roll_twtr = roll_ann_ret["TWTR"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2014-11-06", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.09048985526180642
+
+    returns.add_bm(spy)
+    roll_ann_ret = returns.get_rolling_ann_ret()
+    roll_twtr = roll_ann_ret["TWTR"]
+    roll_spy = roll_ann_ret["SPY"]
+    assert roll_twtr.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_twtr["TWTR"][0] == -0.2633310984499173
+    assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
+    assert roll_spy["SPY"][0] == 0.06256787890936222
 
 
 def test_libor_fred():

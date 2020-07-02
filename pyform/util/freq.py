@@ -74,7 +74,9 @@ def infer_freq(series: pd.DataFrame, use: Optional[int] = 50) -> str:
 
 
 def calc_timedelta_in_years(start, end) -> float:
-    """Computes timedelta between start and end, in years
+    """Computes timedelta between start and end dates, in years
+        To use this function, start and end dates should come
+        from a series of daily frequency.
 
     Args:
         start: start date
@@ -86,9 +88,10 @@ def calc_timedelta_in_years(start, end) -> float:
 
     # datetime representation of number of days in 1 year
     one_year = pd.to_timedelta(365.25, unit="D")
+    one_day = pd.to_timedelta(1, unit="D")
 
     # Compute the duration of the series in terms of number of years
-    years = (end - start) / one_year
+    years = (end - start + one_day) / one_year
 
     return years
 

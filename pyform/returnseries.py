@@ -3,12 +3,11 @@ import logging
 log = logging.getLogger(__name__)
 
 import copy
-import math
 import pandas as pd
 from typing import Optional, Union, Dict
 from pyform.timeseries import TimeSeries
 from pyform.returns.compound import compound, ret_to_period
-from pyform.returns.metrics import calc_ann_vol
+from pyform.returns.metrics import calc_ann_vol, calc_ann_ret
 from pyform.util.freq import is_lower_freq, calc_samples_per_year
 
 
@@ -303,8 +302,7 @@ class ReturnSeries(TimeSeries):
         # Columns in the returned dataframe
         names, total_return, start, end = ([] for i in range(4))
 
-        run_name = [self.name]
-        run_data = [self]
+        run_name, run_data = [self.name], [self]
 
         if include_bm:
             run_name += list(self.benchmark.keys())
@@ -315,8 +313,7 @@ class ReturnSeries(TimeSeries):
             try:
 
                 # keep record of start and so they can be reset later
-                series_start = series.start
-                series_end = series.end
+                series_start, series_end = series.start, series.end
 
                 # modify series so it's in the same timerange as the main series
                 self.align_daterange(series)
@@ -388,26 +385,54 @@ class ReturnSeries(TimeSeries):
             meta is set to True.
         """
 
-        result = self.get_tot_ret(method=method, include_bm=include_bm, meta=True)
+        # Store result in dictionary
+        names, ann_return, start, end = ([] for i in range(4))
 
-        # find number of days
-        one_day = pd.to_timedelta(1, unit="D")
-        result["days"] = (result["end"] - result["start"]) / one_day
+        run_name, run_data = [self.name], [self]
 
-        years = result["days"] / 365.25
-        if method == "geometric":
-            result["value"] = (1 + result["value"]) ** (1 / years) - 1
-        elif method == "arithmetic":
-            result["value"] = result["value"] * (1 / years)
-        elif method == "continuous":
-            result["value"] = (result["value"] + 1).apply(math.log) * (1 / years)
+        if include_bm:
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
 
-        result["field"] = "annualized return"
+        for name, series in zip(run_name, run_data):
+
+            # keep record of start and so they can be reset later
+            series_start, series_end = series.start, series.end
+
+            # modify series so it's in the same timerange as the main series
+            self.align_daterange(series)
+
+            # compute rolling annualized return
+            ann_ret = calc_ann_ret(series.series, method)
+
+            names.append(name)
+            ann_return.append(ann_ret)
+
+            if meta:
+                start.append(series.start)
+                end.append(series.end)
+
+            # reset series date range
+            series.set_daterange(series_start, series_end)
 
         if meta:
-            result = result[["name", "field", "value", "method", "start", "end"]]
+
+            result = pd.DataFrame(
+                data={
+                    "name": names,
+                    "field": "annualized return",
+                    "value": ann_return,
+                    "method": method,
+                    "start": start,
+                    "end": end,
+                }
+            )
+
         else:
-            result = result[["name", "field", "value"]]
+
+            result = pd.DataFrame(
+                data={"name": names, "field": "annualized return", "value": ann_return}
+            )
 
         return result
 
@@ -453,8 +478,7 @@ class ReturnSeries(TimeSeries):
         # Columns in the returned dataframe
         names, ann_vol, start, end = ([] for i in range(4))
 
-        run_name = [self.name]
-        run_data = [self]
+        run_name, run_data = [self.name], [self]
 
         if include_bm:
             run_name += list(self.benchmark.keys())
@@ -465,8 +489,7 @@ class ReturnSeries(TimeSeries):
             try:
 
                 # keep record of start and so they can be reset later
-                series_start = series.start
-                series_end = series.end
+                series_start, series_end = series.start, series.end
 
                 # modify series so it's in the same timerange as the main series
                 self.align_daterange(series)
@@ -580,8 +603,7 @@ class ReturnSeries(TimeSeries):
         # get column name of risk free rate
         rf_name = rf.series.columns[0]
 
-        run_name = [self.name]
-        run_data = [self]
+        run_name, run_data = [self.name], [self]
 
         if include_bm:
             run_name += list(self.benchmark.keys())
@@ -592,8 +614,7 @@ class ReturnSeries(TimeSeries):
             try:
 
                 # keep record of start and so they can be reset later
-                series_start = series.start
-                series_end = series.end
+                series_start, series_end = series.start, series.end
 
                 # modify series so it's in the same timerange as the main series
                 self.align_daterange(series)
@@ -692,9 +713,7 @@ class ReturnSeries(TimeSeries):
         # Store result in dictionary
         result = dict()
 
-        # Columns in the returned dataframe
-        run_name = [self.name]
-        run_data = [self]
+        run_name, run_data = [self.name], [self]
 
         if include_bm:
             run_name += list(self.benchmark.keys())
@@ -703,8 +722,7 @@ class ReturnSeries(TimeSeries):
         for name, series in zip(run_name, run_data):
 
             # keep record of start and so they can be reset later
-            series_start = series.start
-            series_end = series.end
+            series_start, series_end = series.start, series.end
 
             # modify series so it's in the same timerange as the main series
             self.align_daterange(series)
@@ -712,6 +730,74 @@ class ReturnSeries(TimeSeries):
             # compute rolling total return
             ret = series.to_period(freq=freq, method=method)
             roll_result = ret.rolling(window).apply(compound(method))
+            roll_result = roll_result.dropna()
+
+            # store result in dictionary
+            result[name] = roll_result
+
+            # reset series date range
+            series.set_daterange(series_start, series_end)
+
+        return result
+
+    def get_rolling_ann_ret(
+        self,
+        window: Optional[int] = 36,
+        freq: Optional[str] = "M",
+        method: Optional[str] = "geometric",
+        include_bm: Optional[bool] = True,
+    ) -> Dict[str, pd.DataFrame]:
+        """Computes rolling annualized returns of the series
+
+        Args:
+            window: the rolling window. Defaults to 36.
+            freq: Returns are converted to the same frequency before annualized
+                return is compuated. Defaults to "M".
+            compound_method: method to use when compounding return to desired
+                frequency. Defaults to "geometric".
+            include_bm: whether to compute rolling annualized returns for
+                benchmarks as well. Defaults to True.
+
+        Returns:
+            Dict[pd.DataFrame]: dictionary of rolling annualized returns
+
+                * key: name of the series
+                * value: rolling annualized returns, in a datetime indexed pandas
+                    dataframe
+        """
+
+        # Store result in dictionary
+        result = dict()
+
+        run_name, run_data = [self.name], [self]
+
+        if include_bm:
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
+
+        for name, series in zip(run_name, run_data):
+
+            # keep record of start and so they can be reset later
+            series_start, series_end = series.start, series.end
+
+            # modify series so it's in the same timerange as the main series
+            self.align_daterange(series)
+
+            # compute rolling annualized return
+            ret = series.to_period(freq=freq, method=method)
+
+            # TODO: annualization can be more precise for the start and end period
+            # number of days in each period
+            freq_year = {"M": 12, "Q": 4, "Y": 1}
+
+            if freq in ["D", "B"]:
+                years = None
+            else:
+                years = window / freq_year[freq]
+
+            roll_result = ret.rolling(window).apply(
+                lambda x: calc_ann_ret(x, method, years)
+            )
             roll_result = roll_result.dropna()
 
             # store result in dictionary
@@ -744,18 +830,17 @@ class ReturnSeries(TimeSeries):
                 Defaults to "geometric".
 
         Returns:
-            Dict[pd.DataFrame]: dictionary of rolling total returns
+            Dict[pd.DataFrame]: dictionary of rolling annualized volatilities
 
                 * key: name of the series
-                * value: rolling total returns, in a datetime indexed pandas dataframe
+                * value: rolling annualized volatilities, in a datetime indexed
+                    pandas dataframe
         """
 
         # Store result in dictionary
         result = dict()
 
-        # Columns in the returned dataframe
-        run_name = [self.name]
-        run_data = [self]
+        run_name, run_data = [self.name], [self]
 
         if include_bm:
             run_name += list(self.benchmark.keys())
@@ -764,16 +849,20 @@ class ReturnSeries(TimeSeries):
         for name, series in zip(run_name, run_data):
 
             # keep record of start and so they can be reset later
-            series_start = series.start
-            series_end = series.end
+            series_start, series_end = series.start, series.end
 
             # modify series so it's in the same timerange as the main series
             self.align_daterange(series)
 
-            # compute rolling total return
+            # compute rolling annualized volatility
             ret = series.to_period(freq=freq, method=compound_method)
+            samples_per_year = calc_samples_per_year(
+                len(ret.index), series.start, series.end
+            )
             roll_result = ret.rolling(window).apply(
-                lambda x: calc_ann_vol(x, method=method)
+                lambda x: calc_ann_vol(
+                    x, method=method, samples_per_year=samples_per_year
+                )
             )
             roll_result = roll_result.dropna()
 
