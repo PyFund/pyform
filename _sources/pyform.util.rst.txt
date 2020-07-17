@@ -1,0 +1,30 @@
+pyform.util package
+===================
+
+Submodules
+----------
+
+pyform.util.dataframe module
+----------------------------
+
+.. automodule:: pyform.util.dataframe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pyform.util.freq module
+-----------------------
+
+.. automodule:: pyform.util.freq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyform.util
+   :members:
+   :undoc-members:
+   :show-inheritance:

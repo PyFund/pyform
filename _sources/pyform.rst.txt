@@ -1,6 +1,16 @@
 pyform package
 ==============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pyform.analysis
+   pyform.returns
+   pyform.util
+
 Submodules
 ----------
 

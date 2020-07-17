@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pyform.util package &#8212; pyform  documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
+    <link href="_static/css/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="docsearch:language" content="en">
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://xiaolianglin.com">See Author<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/shawnlinxl/pyform" target="_blank" rel="noopener">
+              <span><i class="fab fa-github-square"></i></span>
+            </a>
+          </li>
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar">
+
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+
+
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+  <div class="bd-toc-item active">
+  
+
+  <ul class="nav bd-sidenav">
+      
+    </ul>
+
+</nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#submodules" class="nav-link">Submodules</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.util.dataframe" class="nav-link">pyform.util.dataframe module</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.util.freq" class="nav-link">pyform.util.freq module</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.util" class="nav-link">Module contents</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pyform-util-package">
+<h1>pyform.util package<a class="headerlink" href="#pyform-util-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyform.util.dataframe">
+<span id="pyform-util-dataframe-module"></span><h2>pyform.util.dataframe module<a class="headerlink" href="#module-pyform.util.dataframe" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="pyform.util.dataframe.set_col_as_datetime_index">
+<code class="sig-prename descclassname">pyform.util.dataframe.</code><code class="sig-name descname">set_col_as_datetime_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">col</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.util.dataframe.set_col_as_datetime_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets a column in the DataFrame as its datetime index, and name
+the index “datetime”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – dataframe to set datetime index</p></li>
+<li><p><strong>col</strong> – column to set as the datetime index for the DataFrame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – when column cannot be converted to datetime index</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a pandas dataframe with datetime index</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyform.util.freq">
+<span id="pyform-util-freq-module"></span><h2>pyform.util.freq module<a class="headerlink" href="#module-pyform.util.freq" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="pyform.util.freq.calc_samples_per_year">
+<code class="sig-prename descclassname">pyform.util.freq.</code><code class="sig-name descname">calc_samples_per_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_samples</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#pyform.util.freq.calc_samples_per_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes number of data points per year, given time range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_samples</strong> – total number of samples</p></li>
+<li><p><strong>start</strong> – start date of samples</p></li>
+<li><p><strong>end</strong> – end date of samples</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>average number of samples per year</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyform.util.freq.calc_timedelta_in_years">
+<code class="sig-prename descclassname">pyform.util.freq.</code><code class="sig-name descname">calc_timedelta_in_years</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#pyform.util.freq.calc_timedelta_in_years" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Computes timedelta between start and end dates, in years</dt><dd><p>To use this function, start and end dates should come
+from a series of daily frequency.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – start date</p></li>
+<li><p><strong>end</strong> – end date</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>time delta in number of years</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyform.util.freq.infer_freq">
+<code class="sig-prename descclassname">pyform.util.freq.</code><code class="sig-name descname">infer_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">use</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">50</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#pyform.util.freq.infer_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infer the frequency of the time series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> – a pandas DataFrame with datetime index</p></li>
+<li><p><strong>use</strong> – number of data points to use from the head and tail of the time series
+index in order to determin frequency. This should be at least 10. Defaults
+to 50.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – when multiple frequencies are detected</p></li>
+<li><p><strong>ValueError</strong> – when no frequency can be detected</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>frequency of the time series</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyform.util.freq.is_lower_freq">
+<code class="sig-prename descclassname">pyform.util.freq.</code><code class="sig-name descname">is_lower_freq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freq1</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">freq2</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#pyform.util.freq.is_lower_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests freq1 has a lower or equal frequency than freq2.
+Lower frequencies cannot be converted to higher frequencies
+due to lower resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq1</strong> – frequency 1</p></li>
+<li><p><strong>freq2</strong> – frequency 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>frequency 1 is lower than or euqal to frequency 2</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyform.util">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyform.util" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    <script src="_static/js/index.js"></script>
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020, Shawn Lin.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

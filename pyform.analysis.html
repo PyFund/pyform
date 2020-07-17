@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pyform &#8212; pyform  documentation</title>
+    <title>pyform.analysis package &#8212; pyform  documentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" integrity="sha384-KA6wR/X5RY4zFAHpv/CnoG2UW1uogYfdnP67Uv7eULvTveboZJg0qUpmJZb5VqzN" crossorigin="anonymous">
     <link href="_static/css/index.css" rel="stylesheet">
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
@@ -87,9 +87,24 @@
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
               
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
     <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#submodules" class="nav-link">Submodules</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.analysis.returns" class="nav-link">pyform.analysis.returns module</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#module-pyform.analysis" class="nav-link">Module contents</a>
+        </li>
     
     </ul>
 </nav>
@@ -104,41 +119,37 @@
               
               <div>
                 
-  <div class="section" id="pyform">
-<h1>pyform<a class="headerlink" href="#pyform" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="pyform.html">pyform package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pyform.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyform.analysis.html">pyform.analysis package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pyform.analysis.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.analysis.html#module-pyform.analysis.returns">pyform.analysis.returns module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.analysis.html#module-pyform.analysis">Module contents</a></li>
+  <div class="section" id="pyform-analysis-package">
+<h1>pyform.analysis package<a class="headerlink" href="#pyform-analysis-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyform.analysis.returns">
+<span id="pyform-analysis-returns-module"></span><h2>pyform.analysis.returns module<a class="headerlink" href="#module-pyform.analysis.returns" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="pyform.analysis.returns.table_calendar_return">
+<code class="sig-prename descclassname">pyform.analysis.returns.</code><code class="sig-name descname">table_calendar_return</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">return_series</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pyform.html#pyform.returnseries.ReturnSeries" title="pyform.returnseries.ReturnSeries">pyform.returnseries.ReturnSeries</a></span></em>, <em class="sig-param"><span class="n">use_month_abbr</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#pyform.analysis.returns.table_calendar_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create calendar like monthly return table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_series</strong> – A return series. Should be of minimum monthly frequency</p></li>
+<li><p><strong>use_month_abbr</strong> – Whether to use 3 letter month abbreviations instead of numerical
+month. Defaults to True.</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="pyform.returns.html">pyform.returns package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pyform.returns.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.returns.html#module-pyform.returns.compound">pyform.returns.compound module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.returns.html#module-pyform.returns.metrics">pyform.returns.metrics module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.returns.html#module-pyform.returns">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="pyform.util.html">pyform.util package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pyform.util.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.util.html#module-pyform.util.dataframe">pyform.util.dataframe module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.util.html#module-pyform.util.freq">pyform.util.freq module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyform.util.html#module-pyform.util">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pyform.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyform.html#module-pyform.returnseries">pyform.returnseries module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyform.html#module-pyform.timeseries">pyform.timeseries module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyform.html#module-pyform">Module contents</a></li>
-</ul>
-</li>
-</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with columns: Year, Jan, Feb, …, Dec, Total</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyform.analysis">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyform.analysis" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

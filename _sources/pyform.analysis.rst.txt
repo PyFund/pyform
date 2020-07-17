@@ -1,0 +1,22 @@
+pyform.analysis package
+=======================
+
+Submodules
+----------
+
+pyform.analysis.returns module
+------------------------------
+
+.. automodule:: pyform.analysis.returns
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyform.analysis
+   :members:
+   :undoc-members:
+   :show-inheritance:

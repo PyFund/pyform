@@ -1,0 +1,30 @@
+pyform.returns package
+======================
+
+Submodules
+----------
+
+pyform.returns.compound module
+------------------------------
+
+.. automodule:: pyform.returns.compound
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pyform.returns.metrics module
+-----------------------------
+
+.. automodule:: pyform.returns.metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: pyform.returns
+   :members:
+   :undoc-members:
+   :show-inheritance:
