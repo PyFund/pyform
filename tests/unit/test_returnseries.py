@@ -1,7 +1,7 @@
 import datetime
 import pytest
 import pandas as pd
-from pyform.returnseries import ReturnSeries, CashSeries
+from pyform import ReturnSeries, CashSeries
 
 returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
 spy = ReturnSeries.read_csv("tests/unit/data/spy_returns.csv")
@@ -432,6 +432,38 @@ def test_rolling_ann_vol():
     assert roll_twtr["TWTR"][0] == 0.5725024779205684
     assert roll_spy.index[0] == datetime.datetime.strptime("2016-10-31", "%Y-%m-%d")
     assert roll_spy["SPY"][0] == 0.10810183559733508
+
+
+def test_index_series():
+
+    returns = ReturnSeries.read_csv("tests/unit/data/twitter_returns.csv")
+
+    # No benchmark
+    index_series = returns.get_index_series()
+    index_twitter = index_series["TWTR"]
+    assert index_twitter.index[-1] == datetime.datetime.strptime(
+        "2020-06-30", "%Y-%m-%d"
+    )
+    assert index_twitter["TWTR"][-1] == -0.35300922502128296
+
+    # Daily
+    index_series = returns.get_index_series(freq="D")
+    index_twitter = index_series["TWTR"]
+    assert index_twitter.index[-1] == datetime.datetime.strptime(
+        "2020-06-26", "%Y-%m-%d"
+    )
+    assert index_twitter["TWTR"][-1] == -0.35300922502128473
+
+    returns.add_bm(spy)
+    index_series = returns.get_index_series()
+    index_twitter = index_series["TWTR"]
+    index_spy = index_series["SPY"]
+    assert index_twitter.index[-1] == datetime.datetime.strptime(
+        "2020-06-30", "%Y-%m-%d"
+    )
+    assert index_spy.index[-1] == datetime.datetime.strptime("2020-06-30", "%Y-%m-%d")
+    assert index_twitter["TWTR"][-1] == -0.35300922502128296
+    assert index_spy["SPY"][-1] == 0.6935467657365093
 
 
 def test_rolling_ann_return():

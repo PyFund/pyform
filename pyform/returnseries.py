@@ -6,7 +6,7 @@ import copy
 import pandas as pd
 from typing import Optional, Union, Dict
 from pyform.timeseries import TimeSeries
-from pyform.returns.compound import compound, ret_to_period
+from pyform.returns.compound import compound, ret_to_period, cumseries
 from pyform.returns.metrics import calc_ann_vol, calc_ann_ret
 from pyform.util.freq import is_lower_freq, calc_samples_per_year
 
@@ -351,6 +351,41 @@ class ReturnSeries(TimeSeries):
             result = pd.DataFrame(
                 data={"name": names, "field": "total return", "value": total_return}
             )
+
+        return result
+
+    def get_index_series(
+        self,
+        freq: Optional[str] = "M",
+        method: Optional[str] = "geometric",
+        include_bm: Optional[bool] = True,
+    ) -> Dict[str, pd.DataFrame]:
+
+        # Store result in dictionary
+        result = dict()
+
+        run_name, run_data = [self.name], [self]
+
+        if include_bm:
+            run_name += list(self.benchmark.keys())
+            run_data += list(self.benchmark.values())
+
+        for name, series in zip(run_name, run_data):
+
+            # keep record of start and so they can be reset later
+            series_start, series_end = series.start, series.end
+
+            # modify series so it's in the same timerange as the main series
+            self.align_daterange(series)
+
+            # compute rolling annualized volatility
+            ret = series.to_period(freq=freq, method=method)
+
+            # store result in dictionary
+            result[name] = ret.apply(cumseries(method))
+
+            # reset series date range
+            series.set_daterange(series_start, series_end)
 
         return result
 
